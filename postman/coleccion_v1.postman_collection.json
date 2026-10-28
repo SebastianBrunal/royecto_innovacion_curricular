@@ -1,7 +1,7 @@
 {
   "info": {
-    "name": "Innovación Curricular — v1 · aliado",
-    "description": "Los 7 endpoints de la versión 1, en orden didáctico.\n\nAntes de empezar: `docker compose up -d --build`.\n\nLa tabla arranca VACÍA: la petición 2 responde 204, y ese es el estado inicial del sistema. Córrala otra vez después de la 13 y volverá a dar 204.\n\nLas peticiones 8 y 9 son la pareja que enseña la diferencia entre reemplazar y actualizar: el MISMO cuerpo responde 422 en PUT y 200 en PATCH.",
+    "name": "Innovación Curricular — v1 · las 7 tablas sin FK",
+    "description": "Los 7 endpoints de la versión 1, en orden didáctico.\n\nAntes de empezar: `docker compose up -d --build`.\n\nLa tabla arranca VACÍA: la petición 2 responde 204, y ese es el estado inicial del sistema. Córrala otra vez después de la 13 y volverá a dar 204.\n\nLas peticiones 8 y 9 son la pareja que enseña la diferencia entre reemplazar y actualizar: el MISMO cuerpo responde 422 en PUT y 200 en PATCH.\n\nLas carpetas de abajo son las otras seis tablas de la v1 (entrega 1 del equipo), con el mismo recorrido.",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
   },
   "variable": [
@@ -360,6 +360,1932 @@
         },
         "description": "C9 — para la API ya no existe."
       }
+    },
+    {
+      "name": "Áreas de conocimiento — /api/area_conocimiento",
+      "description": "Mismo contrato que aliado (6_contracts.md §8). Arranca con 218 filas: el listado responde 200.",
+      "item": [
+        {
+          "name": "1. Listar",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base}}/api/area_conocimiento",
+              "host": [
+                "{{base}}"
+              ],
+              "path": [
+                "api",
+                "area_conocimiento"
+              ]
+            },
+            "description": "RF1. Arranca con 218 filas: el listado responde 200."
+          }
+        },
+        {
+          "name": "2. Crear",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base}}/api/area_conocimiento",
+              "host": [
+                "{{base}}"
+              ],
+              "path": [
+                "api",
+                "area_conocimiento"
+              ]
+            },
+            "description": "RF3 — el id va en el cuerpo: la tabla no lo genera (C14). Esperado: 200; si se repite, 500.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"id\": \"Z901\",\n  \"granArea\": \"Ciencias Naturales\",\n  \"area\": \"Matemáticas\",\n  \"disciplina\": \"Matemáticas aplicadas\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "3. Obtener",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base}}/api/area_conocimiento/Z901",
+              "host": [
+                "{{base}}"
+              ],
+              "path": [
+                "api",
+                "area_conocimiento",
+                "Z901"
+              ]
+            },
+            "description": "RF2. Esperado: 200."
+          }
+        },
+        {
+          "name": "4. Obtener uno que no existe",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base}}/api/area_conocimiento/9Z99",
+              "host": [
+                "{{base}}"
+              ],
+              "path": [
+                "api",
+                "area_conocimiento",
+                "9Z99"
+              ]
+            },
+            "description": "Esperado: 404."
+          }
+        },
+        {
+          "name": "5. PUT sin 'disciplina' → 422",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base}}/api/area_conocimiento/Z901",
+              "host": [
+                "{{base}}"
+              ],
+              "path": [
+                "api",
+                "area_conocimiento",
+                "Z901"
+              ]
+            },
+            "description": "Reemplazar exige todos los campos.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"granArea\": \"Ciencias Naturales\",\n  \"area\": \"Matemáticas\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "6. PATCH con el MISMO cuerpo → 200",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base}}/api/area_conocimiento/Z901",
+              "host": [
+                "{{base}}"
+              ],
+              "path": [
+                "api",
+                "area_conocimiento",
+                "Z901"
+              ]
+            },
+            "description": "Actualizar solo exige lo que se envía.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"granArea\": \"Ciencias Naturales\",\n  \"area\": \"Matemáticas\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "7. PUT completo",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base}}/api/area_conocimiento/Z901",
+              "host": [
+                "{{base}}"
+              ],
+              "path": [
+                "api",
+                "area_conocimiento",
+                "Z901"
+              ]
+            },
+            "description": "RF4. Esperado: 200.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"granArea\": \"Ciencias Naturales\",\n  \"area\": \"Matemáticas\",\n  \"disciplina\": \"Matemáticas aplicadas\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "8. PATCH parcial",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base}}/api/area_conocimiento/Z901",
+              "host": [
+                "{{base}}"
+              ],
+              "path": [
+                "api",
+                "area_conocimiento",
+                "Z901"
+              ]
+            },
+            "description": "RF5 — solo un campo. Esperado: 200.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"granArea\": \"Ciencias Naturales (actualizado)\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "9. PATCH vacío → 400",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base}}/api/area_conocimiento/Z901",
+              "host": [
+                "{{base}}"
+              ],
+              "path": [
+                "api",
+                "area_conocimiento",
+                "Z901"
+              ]
+            },
+            "description": "Nada que actualizar.",
+            "body": {
+              "mode": "raw",
+              "raw": "{}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "10. Listar con límite",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base}}/api/area_conocimiento?limite=3",
+              "host": [
+                "{{base}}"
+              ],
+              "path": [
+                "api",
+                "area_conocimiento"
+              ],
+              "query": [
+                {
+                  "key": "limite",
+                  "value": "3"
+                }
+              ]
+            },
+            "description": "Esperado: 200 con hasta 3 filas; ?limite=0 → 400."
+          }
+        },
+        {
+          "name": "11. Eliminar (lógico)",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{base}}/api/area_conocimiento/Z901",
+              "host": [
+                "{{base}}"
+              ],
+              "path": [
+                "api",
+                "area_conocimiento",
+                "Z901"
+              ]
+            },
+            "description": "RF6 — marca activo = 0. Esperado: 200."
+          }
+        },
+        {
+          "name": "12. Eliminar otra vez → 404",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{base}}/api/area_conocimiento/Z901",
+              "host": [
+                "{{base}}"
+              ],
+              "path": [
+                "api",
+                "area_conocimiento",
+                "Z901"
+              ]
+            },
+            "description": "Para la API ya no existe (C9)."
+          }
+        }
+      ]
+    },
+    {
+      "name": "Universidades — /api/universidad",
+      "description": "Mismo contrato que aliado (6_contracts.md §8). Arranca con 6 filas: el listado responde 200.",
+      "item": [
+        {
+          "name": "1. Listar",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base}}/api/universidad",
+              "host": [
+                "{{base}}"
+              ],
+              "path": [
+                "api",
+                "universidad"
+              ]
+            },
+            "description": "RF1. Arranca con 6 filas: el listado responde 200."
+          }
+        },
+        {
+          "name": "2. Crear",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base}}/api/universidad",
+              "host": [
+                "{{base}}"
+              ],
+              "path": [
+                "api",
+                "universidad"
+              ]
+            },
+            "description": "RF3 — el id va en el cuerpo: la tabla no lo genera (C14). Esperado: 200; si se repite, 500.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"id\": 7,\n  \"nombre\": \"Universidad de San Buenaventura - Pasto\",\n  \"tipo\": \"Extensión\",\n  \"ciudad\": \"Pasto\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "3. Obtener",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base}}/api/universidad/7",
+              "host": [
+                "{{base}}"
+              ],
+              "path": [
+                "api",
+                "universidad",
+                "7"
+              ]
+            },
+            "description": "RF2. Esperado: 200."
+          }
+        },
+        {
+          "name": "4. Obtener uno que no existe",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base}}/api/universidad/999999",
+              "host": [
+                "{{base}}"
+              ],
+              "path": [
+                "api",
+                "universidad",
+                "999999"
+              ]
+            },
+            "description": "Esperado: 404."
+          }
+        },
+        {
+          "name": "5. PUT sin 'ciudad' → 422",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base}}/api/universidad/7",
+              "host": [
+                "{{base}}"
+              ],
+              "path": [
+                "api",
+                "universidad",
+                "7"
+              ]
+            },
+            "description": "Reemplazar exige todos los campos.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombre\": \"Universidad de San Buenaventura - Pasto\",\n  \"tipo\": \"Extensión\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "6. PATCH con el MISMO cuerpo → 200",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base}}/api/universidad/7",
+              "host": [
+                "{{base}}"
+              ],
+              "path": [
+                "api",
+                "universidad",
+                "7"
+              ]
+            },
+            "description": "Actualizar solo exige lo que se envía.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombre\": \"Universidad de San Buenaventura - Pasto\",\n  \"tipo\": \"Extensión\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "7. PUT completo",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base}}/api/universidad/7",
+              "host": [
+                "{{base}}"
+              ],
+              "path": [
+                "api",
+                "universidad",
+                "7"
+              ]
+            },
+            "description": "RF4. Esperado: 200.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombre\": \"Universidad de San Buenaventura - Pasto\",\n  \"tipo\": \"Extensión\",\n  \"ciudad\": \"Pasto\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "8. PATCH parcial",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base}}/api/universidad/7",
+              "host": [
+                "{{base}}"
+              ],
+              "path": [
+                "api",
+                "universidad",
+                "7"
+              ]
+            },
+            "description": "RF5 — solo un campo. Esperado: 200.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombre\": \"Universidad de San Buenaventura - Pasto (actualizado)\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "9. PATCH vacío → 400",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base}}/api/universidad/7",
+              "host": [
+                "{{base}}"
+              ],
+              "path": [
+                "api",
+                "universidad",
+                "7"
+              ]
+            },
+            "description": "Nada que actualizar.",
+            "body": {
+              "mode": "raw",
+              "raw": "{}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "10. Listar con límite",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base}}/api/universidad?limite=3",
+              "host": [
+                "{{base}}"
+              ],
+              "path": [
+                "api",
+                "universidad"
+              ],
+              "query": [
+                {
+                  "key": "limite",
+                  "value": "3"
+                }
+              ]
+            },
+            "description": "Esperado: 200 con hasta 3 filas; ?limite=0 → 400."
+          }
+        },
+        {
+          "name": "11. Eliminar (lógico)",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{base}}/api/universidad/7",
+              "host": [
+                "{{base}}"
+              ],
+              "path": [
+                "api",
+                "universidad",
+                "7"
+              ]
+            },
+            "description": "RF6 — marca activo = 0. Esperado: 200."
+          }
+        },
+        {
+          "name": "12. Eliminar otra vez → 404",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{base}}/api/universidad/7",
+              "host": [
+                "{{base}}"
+              ],
+              "path": [
+                "api",
+                "universidad",
+                "7"
+              ]
+            },
+            "description": "Para la API ya no existe (C9)."
+          }
+        }
+      ]
+    },
+    {
+      "name": "Aspectos normativos — /api/aspecto_normativo",
+      "description": "Mismo contrato que aliado (6_contracts.md §8). Arranca vacía: el primer listado responde 204.",
+      "item": [
+        {
+          "name": "1. Listar",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base}}/api/aspecto_normativo",
+              "host": [
+                "{{base}}"
+              ],
+              "path": [
+                "api",
+                "aspecto_normativo"
+              ]
+            },
+            "description": "RF1. Arranca vacía: el primer listado responde 204."
+          }
+        },
+        {
+          "name": "2. Crear",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base}}/api/aspecto_normativo",
+              "host": [
+                "{{base}}"
+              ],
+              "path": [
+                "api",
+                "aspecto_normativo"
+              ]
+            },
+            "description": "RF3 — el id va en el cuerpo: la tabla no lo genera (C14). Esperado: 200; si se repite, 500.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"id\": 1,\n  \"tipo\": \"Decreto\",\n  \"descripcion\": \"Registro calificado de programas\",\n  \"fuente\": \"Decreto 1330 de 2019\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "3. Obtener",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base}}/api/aspecto_normativo/1",
+              "host": [
+                "{{base}}"
+              ],
+              "path": [
+                "api",
+                "aspecto_normativo",
+                "1"
+              ]
+            },
+            "description": "RF2. Esperado: 200."
+          }
+        },
+        {
+          "name": "4. Obtener uno que no existe",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base}}/api/aspecto_normativo/999999",
+              "host": [
+                "{{base}}"
+              ],
+              "path": [
+                "api",
+                "aspecto_normativo",
+                "999999"
+              ]
+            },
+            "description": "Esperado: 404."
+          }
+        },
+        {
+          "name": "5. PUT sin 'fuente' → 422",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base}}/api/aspecto_normativo/1",
+              "host": [
+                "{{base}}"
+              ],
+              "path": [
+                "api",
+                "aspecto_normativo",
+                "1"
+              ]
+            },
+            "description": "Reemplazar exige todos los campos.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"tipo\": \"Decreto\",\n  \"descripcion\": \"Registro calificado de programas\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "6. PATCH con el MISMO cuerpo → 200",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base}}/api/aspecto_normativo/1",
+              "host": [
+                "{{base}}"
+              ],
+              "path": [
+                "api",
+                "aspecto_normativo",
+                "1"
+              ]
+            },
+            "description": "Actualizar solo exige lo que se envía.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"tipo\": \"Decreto\",\n  \"descripcion\": \"Registro calificado de programas\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "7. PUT completo",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base}}/api/aspecto_normativo/1",
+              "host": [
+                "{{base}}"
+              ],
+              "path": [
+                "api",
+                "aspecto_normativo",
+                "1"
+              ]
+            },
+            "description": "RF4. Esperado: 200.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"tipo\": \"Decreto\",\n  \"descripcion\": \"Registro calificado de programas\",\n  \"fuente\": \"Decreto 1330 de 2019\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "8. PATCH parcial",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base}}/api/aspecto_normativo/1",
+              "host": [
+                "{{base}}"
+              ],
+              "path": [
+                "api",
+                "aspecto_normativo",
+                "1"
+              ]
+            },
+            "description": "RF5 — solo un campo. Esperado: 200.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"tipo\": \"Decreto (actualizado)\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "9. PATCH vacío → 400",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base}}/api/aspecto_normativo/1",
+              "host": [
+                "{{base}}"
+              ],
+              "path": [
+                "api",
+                "aspecto_normativo",
+                "1"
+              ]
+            },
+            "description": "Nada que actualizar.",
+            "body": {
+              "mode": "raw",
+              "raw": "{}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "10. Listar con límite",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base}}/api/aspecto_normativo?limite=3",
+              "host": [
+                "{{base}}"
+              ],
+              "path": [
+                "api",
+                "aspecto_normativo"
+              ],
+              "query": [
+                {
+                  "key": "limite",
+                  "value": "3"
+                }
+              ]
+            },
+            "description": "Esperado: 200 con hasta 3 filas; ?limite=0 → 400."
+          }
+        },
+        {
+          "name": "11. Eliminar (lógico)",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{base}}/api/aspecto_normativo/1",
+              "host": [
+                "{{base}}"
+              ],
+              "path": [
+                "api",
+                "aspecto_normativo",
+                "1"
+              ]
+            },
+            "description": "RF6 — marca activo = 0. Esperado: 200."
+          }
+        },
+        {
+          "name": "12. Eliminar otra vez → 404",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{base}}/api/aspecto_normativo/1",
+              "host": [
+                "{{base}}"
+              ],
+              "path": [
+                "api",
+                "aspecto_normativo",
+                "1"
+              ]
+            },
+            "description": "Para la API ya no existe (C9)."
+          }
+        }
+      ]
+    },
+    {
+      "name": "Prácticas y estrategias — /api/practica_estrategia",
+      "description": "Mismo contrato que aliado (6_contracts.md §8). Arranca vacía: el primer listado responde 204.",
+      "item": [
+        {
+          "name": "1. Listar",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base}}/api/practica_estrategia",
+              "host": [
+                "{{base}}"
+              ],
+              "path": [
+                "api",
+                "practica_estrategia"
+              ]
+            },
+            "description": "RF1. Arranca vacía: el primer listado responde 204."
+          }
+        },
+        {
+          "name": "2. Crear",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base}}/api/practica_estrategia",
+              "host": [
+                "{{base}}"
+              ],
+              "path": [
+                "api",
+                "practica_estrategia"
+              ]
+            },
+            "description": "RF3 — el id va en el cuerpo: la tabla no lo genera (C14). Esperado: 200; si se repite, 500.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"id\": 1,\n  \"tipo\": \"Estrategia\",\n  \"nombre\": \"Aprendizaje basado en proyectos\",\n  \"descripcion\": \"Aprender resolviendo un proyecto\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "3. Obtener",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base}}/api/practica_estrategia/1",
+              "host": [
+                "{{base}}"
+              ],
+              "path": [
+                "api",
+                "practica_estrategia",
+                "1"
+              ]
+            },
+            "description": "RF2. Esperado: 200."
+          }
+        },
+        {
+          "name": "4. Obtener uno que no existe",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base}}/api/practica_estrategia/999999",
+              "host": [
+                "{{base}}"
+              ],
+              "path": [
+                "api",
+                "practica_estrategia",
+                "999999"
+              ]
+            },
+            "description": "Esperado: 404."
+          }
+        },
+        {
+          "name": "5. PUT sin 'descripcion' → 422",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base}}/api/practica_estrategia/1",
+              "host": [
+                "{{base}}"
+              ],
+              "path": [
+                "api",
+                "practica_estrategia",
+                "1"
+              ]
+            },
+            "description": "Reemplazar exige todos los campos.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"tipo\": \"Estrategia\",\n  \"nombre\": \"Aprendizaje basado en proyectos\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "6. PATCH con el MISMO cuerpo → 200",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base}}/api/practica_estrategia/1",
+              "host": [
+                "{{base}}"
+              ],
+              "path": [
+                "api",
+                "practica_estrategia",
+                "1"
+              ]
+            },
+            "description": "Actualizar solo exige lo que se envía.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"tipo\": \"Estrategia\",\n  \"nombre\": \"Aprendizaje basado en proyectos\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "7. PUT completo",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base}}/api/practica_estrategia/1",
+              "host": [
+                "{{base}}"
+              ],
+              "path": [
+                "api",
+                "practica_estrategia",
+                "1"
+              ]
+            },
+            "description": "RF4. Esperado: 200.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"tipo\": \"Estrategia\",\n  \"nombre\": \"Aprendizaje basado en proyectos\",\n  \"descripcion\": \"Aprender resolviendo un proyecto\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "8. PATCH parcial",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base}}/api/practica_estrategia/1",
+              "host": [
+                "{{base}}"
+              ],
+              "path": [
+                "api",
+                "practica_estrategia",
+                "1"
+              ]
+            },
+            "description": "RF5 — solo un campo. Esperado: 200.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"tipo\": \"Estrategia (actualizado)\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "9. PATCH vacío → 400",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base}}/api/practica_estrategia/1",
+              "host": [
+                "{{base}}"
+              ],
+              "path": [
+                "api",
+                "practica_estrategia",
+                "1"
+              ]
+            },
+            "description": "Nada que actualizar.",
+            "body": {
+              "mode": "raw",
+              "raw": "{}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "10. Listar con límite",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base}}/api/practica_estrategia?limite=3",
+              "host": [
+                "{{base}}"
+              ],
+              "path": [
+                "api",
+                "practica_estrategia"
+              ],
+              "query": [
+                {
+                  "key": "limite",
+                  "value": "3"
+                }
+              ]
+            },
+            "description": "Esperado: 200 con hasta 3 filas; ?limite=0 → 400."
+          }
+        },
+        {
+          "name": "11. Eliminar (lógico)",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{base}}/api/practica_estrategia/1",
+              "host": [
+                "{{base}}"
+              ],
+              "path": [
+                "api",
+                "practica_estrategia",
+                "1"
+              ]
+            },
+            "description": "RF6 — marca activo = 0. Esperado: 200."
+          }
+        },
+        {
+          "name": "12. Eliminar otra vez → 404",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{base}}/api/practica_estrategia/1",
+              "host": [
+                "{{base}}"
+              ],
+              "path": [
+                "api",
+                "practica_estrategia",
+                "1"
+              ]
+            },
+            "description": "Para la API ya no existe (C9)."
+          }
+        }
+      ]
+    },
+    {
+      "name": "Enfoques — /api/enfoque",
+      "description": "Mismo contrato que aliado (6_contracts.md §8). Arranca vacía: el primer listado responde 204.",
+      "item": [
+        {
+          "name": "1. Listar",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base}}/api/enfoque",
+              "host": [
+                "{{base}}"
+              ],
+              "path": [
+                "api",
+                "enfoque"
+              ]
+            },
+            "description": "RF1. Arranca vacía: el primer listado responde 204."
+          }
+        },
+        {
+          "name": "2. Crear",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base}}/api/enfoque",
+              "host": [
+                "{{base}}"
+              ],
+              "path": [
+                "api",
+                "enfoque"
+              ]
+            },
+            "description": "RF3 — el id va en el cuerpo: la tabla no lo genera (C14). Esperado: 200; si se repite, 500.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"id\": 1,\n  \"nombre\": \"Constructivista\",\n  \"descripcion\": \"El estudiante construye su saber\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "3. Obtener",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base}}/api/enfoque/1",
+              "host": [
+                "{{base}}"
+              ],
+              "path": [
+                "api",
+                "enfoque",
+                "1"
+              ]
+            },
+            "description": "RF2. Esperado: 200."
+          }
+        },
+        {
+          "name": "4. Obtener uno que no existe",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base}}/api/enfoque/999999",
+              "host": [
+                "{{base}}"
+              ],
+              "path": [
+                "api",
+                "enfoque",
+                "999999"
+              ]
+            },
+            "description": "Esperado: 404."
+          }
+        },
+        {
+          "name": "5. PUT sin 'descripcion' → 422",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base}}/api/enfoque/1",
+              "host": [
+                "{{base}}"
+              ],
+              "path": [
+                "api",
+                "enfoque",
+                "1"
+              ]
+            },
+            "description": "Reemplazar exige todos los campos.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombre\": \"Constructivista\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "6. PATCH con el MISMO cuerpo → 200",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base}}/api/enfoque/1",
+              "host": [
+                "{{base}}"
+              ],
+              "path": [
+                "api",
+                "enfoque",
+                "1"
+              ]
+            },
+            "description": "Actualizar solo exige lo que se envía.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombre\": \"Constructivista\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "7. PUT completo",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base}}/api/enfoque/1",
+              "host": [
+                "{{base}}"
+              ],
+              "path": [
+                "api",
+                "enfoque",
+                "1"
+              ]
+            },
+            "description": "RF4. Esperado: 200.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombre\": \"Constructivista\",\n  \"descripcion\": \"El estudiante construye su saber\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "8. PATCH parcial",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base}}/api/enfoque/1",
+              "host": [
+                "{{base}}"
+              ],
+              "path": [
+                "api",
+                "enfoque",
+                "1"
+              ]
+            },
+            "description": "RF5 — solo un campo. Esperado: 200.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombre\": \"Constructivista (actualizado)\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "9. PATCH vacío → 400",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base}}/api/enfoque/1",
+              "host": [
+                "{{base}}"
+              ],
+              "path": [
+                "api",
+                "enfoque",
+                "1"
+              ]
+            },
+            "description": "Nada que actualizar.",
+            "body": {
+              "mode": "raw",
+              "raw": "{}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "10. Listar con límite",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base}}/api/enfoque?limite=3",
+              "host": [
+                "{{base}}"
+              ],
+              "path": [
+                "api",
+                "enfoque"
+              ],
+              "query": [
+                {
+                  "key": "limite",
+                  "value": "3"
+                }
+              ]
+            },
+            "description": "Esperado: 200 con hasta 3 filas; ?limite=0 → 400."
+          }
+        },
+        {
+          "name": "11. Eliminar (lógico)",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{base}}/api/enfoque/1",
+              "host": [
+                "{{base}}"
+              ],
+              "path": [
+                "api",
+                "enfoque",
+                "1"
+              ]
+            },
+            "description": "RF6 — marca activo = 0. Esperado: 200."
+          }
+        },
+        {
+          "name": "12. Eliminar otra vez → 404",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{base}}/api/enfoque/1",
+              "host": [
+                "{{base}}"
+              ],
+              "path": [
+                "api",
+                "enfoque",
+                "1"
+              ]
+            },
+            "description": "Para la API ya no existe (C9)."
+          }
+        }
+      ]
+    },
+    {
+      "name": "Características de innovación — /api/car_innovacion",
+      "description": "Mismo contrato que aliado (6_contracts.md §8). Arranca vacía: el primer listado responde 204.",
+      "item": [
+        {
+          "name": "1. Listar",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base}}/api/car_innovacion",
+              "host": [
+                "{{base}}"
+              ],
+              "path": [
+                "api",
+                "car_innovacion"
+              ]
+            },
+            "description": "RF1. Arranca vacía: el primer listado responde 204."
+          }
+        },
+        {
+          "name": "2. Crear",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base}}/api/car_innovacion",
+              "host": [
+                "{{base}}"
+              ],
+              "path": [
+                "api",
+                "car_innovacion"
+              ]
+            },
+            "description": "RF3 — el id va en el cuerpo: la tabla no lo genera (C14). Esperado: 200; si se repite, 500.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"id\": 1,\n  \"nombre\": \"Flexibilidad curricular\",\n  \"descripcion\": \"El estudiante elige parte de su ruta de formación\",\n  \"tipo\": \"Curricular\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "3. Obtener",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base}}/api/car_innovacion/1",
+              "host": [
+                "{{base}}"
+              ],
+              "path": [
+                "api",
+                "car_innovacion",
+                "1"
+              ]
+            },
+            "description": "RF2. Esperado: 200."
+          }
+        },
+        {
+          "name": "4. Obtener uno que no existe",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base}}/api/car_innovacion/999999",
+              "host": [
+                "{{base}}"
+              ],
+              "path": [
+                "api",
+                "car_innovacion",
+                "999999"
+              ]
+            },
+            "description": "Esperado: 404."
+          }
+        },
+        {
+          "name": "5. PUT sin 'tipo' → 422",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base}}/api/car_innovacion/1",
+              "host": [
+                "{{base}}"
+              ],
+              "path": [
+                "api",
+                "car_innovacion",
+                "1"
+              ]
+            },
+            "description": "Reemplazar exige todos los campos.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombre\": \"Flexibilidad curricular\",\n  \"descripcion\": \"El estudiante elige parte de su ruta de formación\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "6. PATCH con el MISMO cuerpo → 200",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base}}/api/car_innovacion/1",
+              "host": [
+                "{{base}}"
+              ],
+              "path": [
+                "api",
+                "car_innovacion",
+                "1"
+              ]
+            },
+            "description": "Actualizar solo exige lo que se envía.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombre\": \"Flexibilidad curricular\",\n  \"descripcion\": \"El estudiante elige parte de su ruta de formación\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "7. PUT completo",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base}}/api/car_innovacion/1",
+              "host": [
+                "{{base}}"
+              ],
+              "path": [
+                "api",
+                "car_innovacion",
+                "1"
+              ]
+            },
+            "description": "RF4. Esperado: 200.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombre\": \"Flexibilidad curricular\",\n  \"descripcion\": \"El estudiante elige parte de su ruta de formación\",\n  \"tipo\": \"Curricular\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "8. PATCH parcial",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base}}/api/car_innovacion/1",
+              "host": [
+                "{{base}}"
+              ],
+              "path": [
+                "api",
+                "car_innovacion",
+                "1"
+              ]
+            },
+            "description": "RF5 — solo un campo. Esperado: 200.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"nombre\": \"Flexibilidad curricular (actualizado)\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "9. PATCH vacío → 400",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{base}}/api/car_innovacion/1",
+              "host": [
+                "{{base}}"
+              ],
+              "path": [
+                "api",
+                "car_innovacion",
+                "1"
+              ]
+            },
+            "description": "Nada que actualizar.",
+            "body": {
+              "mode": "raw",
+              "raw": "{}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "10. Listar con límite",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base}}/api/car_innovacion?limite=3",
+              "host": [
+                "{{base}}"
+              ],
+              "path": [
+                "api",
+                "car_innovacion"
+              ],
+              "query": [
+                {
+                  "key": "limite",
+                  "value": "3"
+                }
+              ]
+            },
+            "description": "Esperado: 200 con hasta 3 filas; ?limite=0 → 400."
+          }
+        },
+        {
+          "name": "11. Eliminar (lógico)",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{base}}/api/car_innovacion/1",
+              "host": [
+                "{{base}}"
+              ],
+              "path": [
+                "api",
+                "car_innovacion",
+                "1"
+              ]
+            },
+            "description": "RF6 — marca activo = 0. Esperado: 200."
+          }
+        },
+        {
+          "name": "12. Eliminar otra vez → 404",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{base}}/api/car_innovacion/1",
+              "host": [
+                "{{base}}"
+              ],
+              "path": [
+                "api",
+                "car_innovacion",
+                "1"
+              ]
+            },
+            "description": "Para la API ya no existe (C9)."
+          }
+        }
+      ]
     }
   ]
 }

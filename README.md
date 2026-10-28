@@ -1,5 +1,25 @@
 # Módulo Innovación Curricular — ejemplo de referencia
 
+> ## ✅ Entrega 1 del equipo: las 7 tablas sin clave foránea
+>
+> Este repositorio parte del ejemplo del profesor, que traía `aliado`, y
+> **completa las otras seis** —`area_conocimiento`, `universidad`,
+> `aspecto_normativo`, `practica_estrategia`, `enfoque` y `car_innovacion`—
+> con su API y su pantalla.
+>
+> | | |
+> |---|---|
+> | Qué se entregó, dónde está cada requisito y cómo se verificó | **[ENTREGA_1.md](ENTREGA_1.md)** |
+> | Los prompts usados y lo que hubo que corregirle a la IA | [PROMPTS_ENTREGA1.md](docs/spec_kit/versiones/v1_aliado/PROMPTS_ENTREGA1.md) |
+> | Las decisiones nuevas | Clarificaciones C13–C20 en [2_spec.md](docs/spec_kit/versiones/v1_aliado/2_spec.md) · D-v1-10 en [4_research.md](docs/spec_kit/versiones/v1_aliado/4_research.md) |
+> | Los contratos de las seis tablas nuevas | [6_contracts.md §8](docs/spec_kit/versiones/v1_aliado/6_contracts.md) |
+>
+> **Diferencia con el ejemplo:** la clave de la base ya **no** está en el
+> repositorio. Antes del primer arranque: `copy .env.example .env`.
+>
+> El resto de este README es el del ejemplo del profesor, actualizado donde
+> la entrega lo cambió.
+
 Este repositorio contiene **dos cosas distintas**, y conviene no
 confundirlas:
 
@@ -20,6 +40,7 @@ Solo hace falta **Docker Desktop**. No hay que instalar .NET ni SQL Server.
 ```powershell
 git clone https://github.com/ccastro2050/proyecto_innovacion_curricular1.git
 cd proyecto_innovacion_curricular1
+copy .env.example .env          # una sola vez: ponga su propia clave
 docker compose up -d --build
 ```
 
@@ -33,6 +54,7 @@ sus catálogos, y compila la API **y la pantalla**. Al terminar:
 | **API — diagnóstico** | http://localhost:8072/ |
 | **Documentación interactiva** | http://localhost:8072/swagger |
 | Listado de aliados | http://localhost:8072/api/aliado |
+| Las otras seis tablas | `/api/area_conocimiento` · `/api/universidad` · `/api/aspecto_normativo` · `/api/practica_estrategia` · `/api/enfoque` · `/api/car_innovacion` |
 | SQL Server (SSMS o SQLTools, opcional) | `localhost,11471` · usuario `sa` |
 
 **Pruebe la joya didáctica de la v1:** un `PUT` sin `correo`
@@ -40,13 +62,11 @@ responde **422**; el **mismo cuerpo** enviado por `PATCH` responde **200**.
 Esa diferencia es parte de lo que enseña esta versión, y está en la
 colección de [Postman](postman/) lista para probar con clics.
 
-> **¿La contraseña de la base?** Está a la vista en el
-> `docker-compose.yml`. Es una excepción **declarada** (Artículo 7 de la
-> [constitución](docs/spec_kit/1_constitution.md)): este repositorio es una
-> plantilla que corre en contenedores desechables y nunca se despliega.
-> **En su proyecto de aula eso no se copia:** ahí los secretos van en un
-> `.env` fuera de git, y un secreto quemado anula el criterio de seguridad
-> de la versión.
+> **¿La contraseña de la base?** En **su** `.env`, que no se sube a git.
+> En el ejemplo del profesor estaba a la vista en el `docker-compose.yml`,
+> como excepción declarada de una plantilla; en el proyecto de aula eso no
+> se permite (Artículo 7 de la [constitución](docs/spec_kit/1_constitution.md),
+> decisión D-v1-10), así que la entrega 1 la movió al `.env`.
 
 ### Los días siguientes
 
@@ -65,7 +85,11 @@ El CRUD completo de **`aliado`** de punta a punta: controlador, servicio,
 repositorio, interfaces, peticiones por verbo y una prueba que corre **sin
 base de datos**.
 
-**La tabla arranca vacía**, y eso no es una carencia: el smoke test recorre
+**Entrega 1:** las otras seis tablas siguen ese mismo patrón, cada una con su
+controlador, su servicio, su repositorio, sus peticiones, su prueba sin base
+de datos y su pantalla. Ver [ENTREGA_1.md](ENTREGA_1.md).
+
+**La tabla `aliado` arranca vacía**, y eso no es una carencia: el smoke test recorre
 el ciclo completo desde el estado inicial —**204 → crear → total 1 → borrar
 → 204 otra vez**— y ejercita el 204 del listado vacío, que una tabla llena
 nunca deja probar.
@@ -97,7 +121,9 @@ proyecto_innovacion_curricular1/
 │
 ├── pruebas_humo/                     humo_front.py: recorre el sistema DESDE LA
 │                                     PANTALLA y apaga la API para probar que
-│                                     son procesos distintos
+│                                     son procesos distintos · humo_api.py: el
+│                                     contrato completo en las 7 tablas ·
+│                                     recorrido_clics.js: clics reales (opcional)
 ├── docs/spec_kit/                      LA FUENTE DE VERDAD (ver abajo)
 ├── postman/                            los 14 endpoints listos para probar con clics
 ├── docker-compose.yml                  TODO el sistema declarado en un archivo

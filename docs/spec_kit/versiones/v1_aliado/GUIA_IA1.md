@@ -7,6 +7,9 @@
 > Antes de abrir cualquiera de los dos, el [9_checklist.md](9_checklist.md)
 > tiene que estar en verde. Construir sobre una spec sin revisar es
 > multiplicar el error.
+>
+> **Los prompts que de verdad usó el equipo en la entrega 1** —con sus
+> correcciones— están en [PROMPTS_ENTREGA1.md](PROMPTS_ENTREGA1.md).
 
 ## 0. Los dos caminos
 

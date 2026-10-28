@@ -176,3 +176,50 @@ DELETE /api/aliado/999999999                  ← nunca existió
 **La fila no se borra:** queda con `activo = 0` y desaparece de los
 listados. Comprobarlo es el criterio 5: el listado **vuelve a responder
 204** y la fila sigue en la base.
+
+## 8. Las otras seis tablas de la v1 (entrega 1 del equipo)
+
+Las seis siguen **exactamente** los contratos de las secciones 2 a 7: los
+mismos verbos, los mismos sobres, los mismos códigos (incluida la pareja
+`PUT` = 422 vs `PATCH` = 200). Lo único que cambia es la ruta, la llave y los
+campos del cuerpo:
+
+| Recurso | Ruta | Llave en la ruta | Campos del cuerpo (todos obligatorios en `POST` y `PUT`) | Semillas |
+|---|---|---|---|---|
+| Áreas de conocimiento | `/api/area_conocimiento` | `{id}` — **texto**, máx. 6 (`1A01`) | `granArea` (60) · `area` (60) · `disciplina` (150) | 218 |
+| Universidades | `/api/universidad` | `{id:int}` | `nombre` (60) · `tipo` (45) · `ciudad` (45) | 6 |
+| Aspectos normativos | `/api/aspecto_normativo` | `{id:int}` | `tipo` (45) · `descripcion` (45) · `fuente` (45) | 0 |
+| Prácticas y estrategias | `/api/practica_estrategia` | `{id:int}` | `tipo` (45) · `nombre` (45) · `descripcion` (45) | 0 |
+| Enfoques | `/api/enfoque` | `{id:int}` | `nombre` (45) · `descripcion` (45) | 0 |
+| Características de innovación | `/api/car_innovacion` | `{id:int}` | `nombre` (45) · `descripcion` (sin tope) · `tipo` (45) | 0 |
+
+El número entre paréntesis es el tope de caracteres: pasarlo es **422**, en
+`POST`, `PUT` y también en `PATCH` (C18).
+
+En el `POST` el cuerpo lleva además el **`id`**: la base no lo genera (C14).
+En `PUT` y `PATCH` el `id` **no** va en el cuerpo: viaja en la ruta.
+
+Ejemplo, con universidad:
+
+```
+POST /api/universidad
+body {"id":7,"nombre":"Universidad de San Buenaventura - Pasto","tipo":"Extensión","ciudad":"Pasto"}
+→ 200 { "estado":200, "mensaje":"Universidad creada exitosamente." }
+
+GET /api/universidad/7
+→ 200 { "id":7, "nombre":"Universidad de San Buenaventura - Pasto", "tipo":"Extensión", "ciudad":"Pasto" }
+
+GET /api/universidad/999999
+→ 404 { "estado":404, "mensaje":"Universidad no encontrada.",
+        "detalle":"No existe una universidad con el id 999999." }
+
+DELETE /api/universidad/7
+→ 200 { "estado":200, "mensaje":"Universidad eliminada.", "filasAfectadas":1 }
+```
+
+El diagnóstico (`GET /`) cambió su `mensaje` a «API Innovación Curricular —
+tablas sin clave foránea», porque ya no es solo el módulo de aliados. La
+`version` sigue siendo `"v1"`.
+
+**Evidencia:** `pruebas_humo/humo_api.py` recorre este contrato completo en
+las siete tablas y comprueba en la base que el borrado deja `activo = 0`.

@@ -18,7 +18,7 @@
 
 | Versión | Qué agrega (acumulativo) | Estado |
 |---|---|---|
-| **v1** | CRUD completo de las **tablas sin clave foránea**, con los catálogos del Excel cargados | **En curso** ([spec](v1_aliado/2_spec.md)) |
+| **v1** | CRUD completo de las **tablas sin clave foránea**, con los catálogos del Excel cargados | **Construida: las 7 tablas** (entrega 1) · falta firmar el [checklist](v1_aliado/9_checklist.md) y poner el tag ([spec](v1_aliado/2_spec.md)) |
 | v2 | CRUD de las **15 tablas con clave foránea**: las FK como listas desplegables cargadas desde la API, y validación de integridad referencial | Sin especificar |
 | v3 | **JWT**, sesiones y control de acceso por roles; CRUD de `usuario`, `rol` y `rol_usuario` solo para administradores | Sin especificar |
 | v4 | **10 consultas multitabla** (4+ tablas cada una), dashboard con gráficos, páginas corporativas, responsive/PWA y **publicación** en un servidor | Sin especificar |
@@ -51,6 +51,11 @@ Eso no es una carencia sino una ventaja para el smoke test, que puede
 recorrer el ciclo completo desde el principio —**listado vacío → 204,
 crear → 1 fila, borrar → 204 otra vez**— y ejercitar el 204 que una tabla
 llena nunca deja probar.
+
+> **Entrega 1 del equipo:** las otras seis ya están construidas con ese
+> patrón —API y pantalla— y verificadas con `pruebas_humo/humo_api.py` y
+> `pruebas_humo/humo_front.py`. Ver [ENTREGA_1.md](../../../ENTREGA_1.md) y
+> las clarificaciones C13 a C20 de la [spec](v1_aliado/2_spec.md).
 
 Las demás tablas de la v1 son **ese mismo patrón** con otros nombres. El
 equipo que tome este ejemplo lo revisa, y **si está de acuerdo lo retoma y
