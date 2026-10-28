@@ -32,6 +32,9 @@ entre 160 segundos y más de cinco minutos según la carga de la máquina. Una
 prueba que se pone roja por eso no está midiendo el sistema: está midiendo el
 computador.
 
+Las otras seis pantallas de la v1 (OTRAS, más abajo) se revisan igual: cada
+una con su ficha sembrada por la API, sus columnas y sin jerga.
+
 Uso:  python pruebas_humo/humo_front.py     (parado en la raíz del proyecto)
 """
 import html
@@ -65,6 +68,35 @@ FICHA = {
 
 # Las columnas que la tabla debe traer, en el idioma del usuario.
 ETIQUETAS = ("NIT", "Razón social", "Nombre del contacto", "Correo", "Ciudad")
+
+# ----------------------------------------------------------------------
+# LAS OTRAS SEIS PANTALLAS DE LA v1
+#
+# Cada una con: su dirección, su título, la ruta de su API, la ficha que el
+# guion siembra por la API (llave al azar, igual que la de aliado), el texto
+# que la delata en pantalla y las columnas que debe mostrar.
+# ----------------------------------------------------------------------
+OTRAS = [
+    ("/areas-conocimiento", "Áreas de conocimiento", "area_conocimiento",
+     {"id": "Y" + SUFIJO, "granArea": "Gran área " + SUFIJO, "area": "Área " + SUFIJO,
+      "disciplina": "Disciplina " + SUFIJO},
+     "Disciplina " + SUFIJO, ("Id", "Gran área", "Área", "Disciplina")),
+    ("/universidades", "Universidades", "universidad",
+     {"id": LLAVE, "nombre": "Universidad " + SUFIJO, "tipo": "Seccional", "ciudad": "Ciudad " + SUFIJO},
+     "Universidad " + SUFIJO, ("Id", "Nombre", "Tipo", "Ciudad")),
+    ("/aspectos-normativos", "Aspectos normativos", "aspecto_normativo",
+     {"id": LLAVE, "tipo": "Decreto", "descripcion": "Aspecto " + SUFIJO, "fuente": "Fuente " + SUFIJO},
+     "Aspecto " + SUFIJO, ("Id", "Tipo", "Descripción", "Fuente")),
+    ("/practicas-estrategias", "Prácticas y estrategias", "practica_estrategia",
+     {"id": LLAVE, "tipo": "Estrategia", "nombre": "Práctica " + SUFIJO, "descripcion": "Descripción " + SUFIJO},
+     "Práctica " + SUFIJO, ("Id", "Tipo", "Nombre", "Descripción")),
+    ("/enfoques", "Enfoques", "enfoque",
+     {"id": LLAVE, "nombre": "Enfoque " + SUFIJO, "descripcion": "Descripción " + SUFIJO},
+     "Enfoque " + SUFIJO, ("Id", "Nombre", "Descripción")),
+    ("/caracteristicas-innovacion", "Características de innovación", "car_innovacion",
+     {"id": LLAVE, "nombre": "Característica " + SUFIJO, "descripcion": "Descripción " + SUFIJO, "tipo": "Curricular"},
+     "Característica " + SUFIJO, ("Id", "Nombre", "Descripción", "Tipo")),
+]
 
 
 def ver(url):
@@ -139,13 +171,18 @@ if not esperar_api():
 if api("POST", "/api/aliado", FICHA) != 200:
     print(f"No pude crear la ficha de prueba {LLAVE}. ¿La API está sana?")
     raise SystemExit(1)
-print(f"    ficha de prueba {LLAVE} creada por la API\n")
+print(f"    ficha de prueba {LLAVE} creada por la API")
+for _, _, tabla, ficha, _, _ in OTRAS:
+    if api("POST", f"/api/{tabla}", ficha) != 200:
+        print(f"No pude crear la ficha de prueba de {tabla}. ¿La API está sana?")
+        raise SystemExit(1)
+print(f"    y una ficha de prueba en cada una de las otras {len(OTRAS)} tablas\n")
 
 TESTIGO = FICHA["razonSocial"]
 
 print("=== 1. Las pantallas responden, cada una por su dirección ===")
 for ruta, titulo in [("/", "Sistema de innovación curricular"),
-                     ("/aliados", "Aliados")]:
+                     ("/aliados", "Aliados")] + [(o[0], o[1]) for o in OTRAS]:
     c, t = ver(f"{FRONT}{ruta}")
     revisar(f"{ruta:26s} responde y se titula «{titulo}»",
             c == 200 and titulo in visible(t))
@@ -154,6 +191,8 @@ print()
 print("=== 2. El menú lleva a la pantalla, con una dirección de verdad ===")
 c, t = ver(f"{FRONT}/")
 revisar("el menú tiene el enlace", 'href="aliados"' in t)
+for ruta, *_ in OTRAS:
+    revisar(f"  y el de {ruta}", f'href="{ruta[1:]}"' in t)
 revisar("y NO hay ninguna dirección con el nombre de la tabla como parámetro",
         "{tabla}" not in t and "?tabla=" not in t)
 
@@ -168,6 +207,17 @@ revisar("y la ficha que se acaba de crear se ve en la pantalla",
 revisar("la tabla trae sus columnas",
         all(x in visible(t) for x in ETIQUETAS),
         str([x for x in ETIQUETAS if x not in visible(t)]))
+revisar("cada fila ofrece Ver, Editar y Retirar",
+        all(x in visible(t) for x in ("Ver", "Editar", "Retirar")))
+
+for ruta, _, tabla, ficha, testigo, columnas in OTRAS:
+    c, t = ver(f"{FRONT}{ruta}")
+    texto = visible(t)
+    revisar(f"{ruta:26s} muestra la ficha que se creó por la API",
+            c == 200 and testigo in texto and str(ficha["id"]) in texto)
+    revisar(f"{'':26s} con sus columnas y sus tres acciones",
+            all(x in texto for x in columnas + ("Ver", "Editar", "Retirar")),
+            str([x for x in columnas if x not in texto]))
 
 print()
 print("=== 4. Lo que la pantalla NO debe decirle al usuario ===")
@@ -176,7 +226,7 @@ print("=== 4. Lo que la pantalla NO debe decirle al usuario ===")
 # Jerga de verdad es la ruta de la API, los verbos y los motores.
 JERGA = ["PUT", "PATCH", "DELETE", "422", "500", "/api/",
          "Dapper", "SQL Server", "endpoint", "localhost:"]
-for ruta in ("/", "/aliados"):
+for ruta in ["/", "/aliados"] + [o[0] for o in OTRAS]:
     c, t = ver(f"{FRONT}{ruta}")
     visto = [j for j in JERGA if j in visible(t)]
     revisar(f"{ruta:26s} sin jerga", not visto, str(visto))
@@ -233,6 +283,9 @@ revisar("la ficha de prueba se retira al terminar", codigo == 200, f"HTTP {codig
 # comprueba aquí es que la API ya no la entrega, que es lo que ve el usuario.
 revisar("  y la API ya no la entrega",
         api("GET", f"/api/aliado/{LLAVE}") == 404)
+for _, _, tabla, ficha, _, _ in OTRAS:
+    codigo = api("DELETE", f"/api/{tabla}/{ficha['id']}")
+    revisar(f"la ficha de prueba de {tabla} se retira", codigo == 200, f"HTTP {codigo}")
 
 print()
 if fallos:
