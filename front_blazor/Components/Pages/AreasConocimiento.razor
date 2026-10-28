@@ -1,0 +1,365 @@
+@page "/areas-conocimiento"
+@rendermode InteractiveServer
+@inject ServicioAreaConocimiento Servicio
+@inject IJSRuntime JS
+
+@*
+    LA PANTALLA DE `area_conocimiento` — el mismo molde que Aliados.razor.
+
+    Dirección propia (/areas-conocimiento), sin jerga para el usuario, y los dos
+    botones de guardar: «la ficha completa» y «solo lo que cambié».
+*@
+
+<PageTitle>Áreas de conocimiento</PageTitle>
+
+<div class="encabezado">
+    <div>
+        <h1>Áreas de conocimiento</h1>
+        <p class="nota">
+            El catálogo jerárquico de áreas de conocimiento: gran área, área y disciplina. Viene cargado con las 218 filas del Excel de referencia. Lo que se retira deja de aparecer aquí, pero no se borra.
+        </p>
+    </div>
+    @if (!mostrandoFormulario)
+    {
+        <button class="boton primario" @onclick="Agregar">Agregar</button>
+    }
+</div>
+
+@* ─────────── LOS AVISOS ─────────── *@
+@foreach (var error in errores)
+{
+    <p class="aviso error">@error</p>
+}
+@if (!string.IsNullOrEmpty(exito))
+{
+    <p class="aviso exito">@exito</p>
+}
+
+@* ─────────── LA FICHA (botón «Ver») ─────────── *@
+@if (ficha != null)
+{
+    <div class="tarjeta-formulario ficha">
+        <h2>Área de conocimiento @ficha.Id</h2>
+        <dl>
+            <dt>Identificador</dt>
+            <dd><code>@ficha.Id</code></dd>
+            <dt>Gran área</dt>
+            <dd>@ficha.GranArea</dd>
+            <dt>Área</dt>
+            <dd>@ficha.Area</dd>
+            <dt>Disciplina</dt>
+            <dd>@ficha.Disciplina</dd>
+        </dl>
+        <div class="pareja">
+            <button class="boton" @onclick="() => Editar(ficha!)">Editar</button>
+            <button class="boton" @onclick="CerrarFicha">Cerrar</button>
+        </div>
+    </div>
+}
+
+@* ─────────── EL FORMULARIO ─────────── *@
+@if (mostrandoFormulario)
+{
+    <div class="tarjeta-formulario">
+        <h2>@(editando ? "Editar el área de conocimiento" : "Agregar el área de conocimiento")</h2>
+
+        <label>
+            Identificador
+            <input type="text" maxlength="6" @bind="campoId" disabled="@editando" />
+            @if (editando)
+            {
+                <span class="ayuda">
+                    El identificador no se cambia. Si está mal, se agrega otra ficha y se retira esta.
+                </span>
+            }
+            else
+            {
+                <span class="ayuda">El código del catálogo, por ejemplo 1A01 (máximo 6 caracteres). No se podrá cambiar después.</span>
+            }
+        </label>
+
+        <label>
+            Gran área
+            <input type="text" maxlength="60" @bind="campoGranArea" />
+        </label>
+
+        <label>
+            Área
+            <input type="text" maxlength="60" @bind="campoArea" />
+        </label>
+
+        <label>
+            Disciplina
+            <input type="text" maxlength="150" @bind="campoDisciplina" />
+        </label>
+
+        <div class="pareja">
+            @if (editando)
+            {
+                <button class="boton primario" @onclick="GuardarCompleta" disabled="@guardando">
+                    Guardar la ficha completa
+                </button>
+                <button class="boton" @onclick="GuardarLoQueCambio" disabled="@guardando">
+                    Guardar solo lo que cambié
+                </button>
+            }
+            else
+            {
+                <button class="boton primario" @onclick="Crear" disabled="@guardando">
+                    Agregar
+                </button>
+            }
+            <button class="boton" @onclick="Cancelar" disabled="@guardando">Cancelar</button>
+        </div>
+
+        @if (editando)
+        {
+            <span class="ayuda">
+                «La ficha completa» exige que los 3 datos estén diligenciados.
+                «Solo lo que cambié» guarda lo que usted escribió y deja lo demás como estaba.
+            </span>
+        }
+    </div>
+}
+
+@* ─────────── EL BUSCADOR ───────────
+   Son 218 filas: sin un filtro, encontrar una es recorrer la tabla a ojo.
+   Filtra lo que ya llegó de la API; no hace otra consulta. *@
+@if (!cargando && filas.Count > 0)
+{
+    <label class="buscador">
+        Buscar
+        <input type="text" placeholder="Código, gran área, área o disciplina" @bind="filtro" @bind:event="oninput" />
+    </label>
+}
+
+@* ─────────── EL LISTADO ─────────── *@
+@if (cargando)
+{
+    <p class="nota">Cargando…</p>
+}
+else if (filas.Count > 0)
+{
+    <div class="tabla-scroll">
+        <table>
+            <thead>
+                <tr>
+                    <th>Id</th>
+                    <th>Gran área</th>
+                    <th>Área</th>
+                    <th>Disciplina</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var fila in Visibles)
+                {
+                    <tr>
+                        <td><code>@fila.Id</code></td>
+                        <td>@fila.GranArea</td>
+                        <td>@fila.Area</td>
+                        <td>@fila.Disciplina</td>
+                        <td>
+                            <div class="acciones">
+                                <button class="boton" @onclick="() => Ver(fila)">Ver</button>
+                                <button class="boton" @onclick="() => Editar(fila)">Editar</button>
+                                <button class="boton peligro" @onclick="() => Retirar(fila)">Retirar</button>
+                            </div>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+    <p class="nota">@Visibles.Count() de @filas.Count ficha(s).</p>
+}
+else
+{
+    <p class="vacio">
+        Todavía no hay áreas de conocimiento. Use «Agregar» para crear la primera.
+    </p>
+}
+
+@code {
+    private List<AreaConocimiento> filas = new();
+    private List<string> errores = new();
+    private string exito = string.Empty;
+    private AreaConocimiento? ficha;
+
+    private bool cargando = true;
+    private bool guardando;
+    private bool mostrandoFormulario;
+    private bool editando;
+
+    private string campoId = string.Empty;
+    private string campoGranArea = string.Empty;
+    private string campoArea = string.Empty;
+    private string campoDisciplina = string.Empty;
+
+    private string filtro = string.Empty;
+
+    private IEnumerable<AreaConocimiento> Visibles => string.IsNullOrWhiteSpace(filtro)
+        ? filas
+        : filas.Where(f => Contiene(f.Id) || Contiene(f.GranArea) || Contiene(f.Area) || Contiene(f.Disciplina));
+
+    private bool Contiene(string valor) =>
+        valor.Contains(filtro.Trim(), StringComparison.CurrentCultureIgnoreCase);
+
+    protected override async Task OnInitializedAsync() => await Cargar();
+
+    private async Task Cargar()
+    {
+        cargando = true;
+        var r = await Servicio.Listar();
+        cargando = false;
+
+        // Aun con error se pinta la pantalla, con el aviso adentro
+        errores = r.Errores;
+        filas = r.Ok ? r.Datos! : new();
+    }
+
+    /// <summary>
+    /// «Ver» le pide la ficha a la API por su identificador, en vez de mostrar
+    /// la fila que ya está en la tabla: así lo que se ve es el estado actual,
+    /// aunque otra persona la haya cambiado o retirado mientras tanto.
+    /// </summary>
+    private async Task Ver(AreaConocimiento fila)
+    {
+        mostrandoFormulario = false;
+        exito = string.Empty;
+        var r = await Servicio.Obtener(fila.Id);
+        if (r.Ok)
+        {
+            ficha = r.Datos;
+            errores = new();
+        }
+        else
+        {
+            ficha = null;
+            errores = r.Errores;
+        }
+    }
+
+    private void CerrarFicha() => ficha = null;
+
+    private void Agregar()
+    {
+        Limpiar();
+        ficha = null;
+        editando = false;
+        mostrandoFormulario = true;
+    }
+
+    private void Editar(AreaConocimiento fila)
+    {
+        campoId = fila.Id;
+        campoGranArea = fila.GranArea;
+        campoArea = fila.Area;
+        campoDisciplina = fila.Disciplina;
+        ficha = null;
+        editando = true;
+        mostrandoFormulario = true;
+        errores = new();
+        exito = string.Empty;
+    }
+
+    private void Cancelar()
+    {
+        mostrandoFormulario = false;
+        Limpiar();
+    }
+
+    private void Limpiar()
+    {
+        campoId = string.Empty;
+        campoGranArea = string.Empty;
+        campoArea = string.Empty;
+        campoDisciplina = string.Empty;
+        errores = new();
+        exito = string.Empty;
+    }
+
+    private async Task Crear()
+    {
+        guardando = true;
+        var r = await Servicio.Crear(new AreaConocimiento
+        {
+            Id = campoId.Trim(),
+            GranArea = campoGranArea.Trim(),
+            Area = campoArea.Trim(),
+            Disciplina = campoDisciplina.Trim(),
+        });
+        guardando = false;
+
+        await TrasGuardar(r, $"Se agregó el área de conocimiento {campoId}.");
+    }
+
+    private async Task GuardarCompleta()
+    {
+        guardando = true;
+        var r = await Servicio.Reemplazar(campoId, new AreaConocimiento
+        {
+            GranArea = campoGranArea.Trim(),
+            Area = campoArea.Trim(),
+            Disciplina = campoDisciplina.Trim(),
+        });
+        guardando = false;
+
+        await TrasGuardar(r, $"Se guardó el área de conocimiento {campoId}.");
+    }
+
+    private async Task GuardarLoQueCambio()
+    {
+        guardando = true;
+        var r = await Servicio.Actualizar(
+            campoId,
+            campoGranArea,
+            campoArea,
+            campoDisciplina);
+        guardando = false;
+
+        await TrasGuardar(r, $"Se guardó el área de conocimiento {campoId}.");
+    }
+
+    /// <summary>
+    /// Si salió bien se cierra el formulario y se recarga; si no, el formulario
+    /// se queda con lo que la persona había escrito.
+    /// </summary>
+    private async Task TrasGuardar(Resultado<bool> r, string mensaje)
+    {
+        if (r.Ok)
+        {
+            mostrandoFormulario = false;
+            exito = mensaje;
+            errores = new();
+            await Cargar();
+        }
+        else
+        {
+            errores = r.Errores;
+            exito = string.Empty;
+        }
+    }
+
+    private async Task Retirar(AreaConocimiento fila)
+    {
+        // Se pregunta antes: retirar no se deshace desde esta pantalla.
+        var seguro = await JS.InvokeAsync<bool>(
+            "confirm", $"¿Retirar el área de conocimiento {fila.Id} del uso?");
+        if (!seguro) return;
+
+        var r = await Servicio.Eliminar(fila.Id);
+        if (r.Ok)
+        {
+            exito = $"Se retiró el área de conocimiento {fila.Id}.";
+            errores = new();
+            if (ficha?.Id == fila.Id) ficha = null;
+            await Cargar();
+        }
+        else
+        {
+            errores = r.Errores;
+            exito = string.Empty;
+        }
+    }
+}

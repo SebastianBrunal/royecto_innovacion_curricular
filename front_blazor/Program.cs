@@ -18,18 +18,25 @@ builder.Services.AddRazorComponents()
 // ============================================================
 var urlApi = builder.Configuration["UrlApi"] ?? "http://localhost:8072";
 
-builder.Services.AddHttpClient<ServicioAliado>(cliente =>
+// Todos los clientes apuntan a la MISMA API con el mismo tiempo de espera.
+void ConfigurarCliente(HttpClient cliente)
 {
     cliente.BaseAddress = new Uri(urlApi);
     cliente.Timeout = TimeSpan.FromSeconds(10);
-});
+}
 
 // ============================================================
 // UN SERVICIO POR RECURSO (Artículo 10.1)
 //
-// Hoy hay uno porque la v1 construye una tabla. Cuando haya más recursos
-// habrá una línea por cada uno — no una que sirva para cualquier tabla.
+// Una línea por cada tabla de la v1 — no una que sirva para cualquier tabla.
 // ============================================================
+builder.Services.AddHttpClient<ServicioAliado>(ConfigurarCliente);
+builder.Services.AddHttpClient<ServicioAreaConocimiento>(ConfigurarCliente);
+builder.Services.AddHttpClient<ServicioUniversidad>(ConfigurarCliente);
+builder.Services.AddHttpClient<ServicioAspectoNormativo>(ConfigurarCliente);
+builder.Services.AddHttpClient<ServicioPracticaEstrategia>(ConfigurarCliente);
+builder.Services.AddHttpClient<ServicioEnfoque>(ConfigurarCliente);
+builder.Services.AddHttpClient<ServicioCaracteristicaInnovacion>(ConfigurarCliente);
 
 var app = builder.Build();
 

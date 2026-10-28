@@ -1,0 +1,345 @@
+@page "/practicas-estrategias"
+@rendermode InteractiveServer
+@inject ServicioPracticaEstrategia Servicio
+@inject IJSRuntime JS
+
+@*
+    LA PANTALLA DE `practica_estrategia` — el mismo molde que Aliados.razor.
+
+    Dirección propia (/practicas-estrategias), sin jerga para el usuario, y los dos
+    botones de guardar: «la ficha completa» y «solo lo que cambié».
+*@
+
+<PageTitle>Prácticas y estrategias</PageTitle>
+
+<div class="encabezado">
+    <div>
+        <h1>Prácticas y estrategias</h1>
+        <p class="nota">
+            Las prácticas y estrategias pedagógicas: aprendizaje basado en proyectos, prácticas empresariales, laboratorios, talleres. Lo que se retira deja de aparecer aquí, pero no se borra.
+        </p>
+    </div>
+    @if (!mostrandoFormulario)
+    {
+        <button class="boton primario" @onclick="Agregar">Agregar</button>
+    }
+</div>
+
+@* ─────────── LOS AVISOS ─────────── *@
+@foreach (var error in errores)
+{
+    <p class="aviso error">@error</p>
+}
+@if (!string.IsNullOrEmpty(exito))
+{
+    <p class="aviso exito">@exito</p>
+}
+
+@* ─────────── LA FICHA (botón «Ver») ─────────── *@
+@if (ficha != null)
+{
+    <div class="tarjeta-formulario ficha">
+        <h2>Práctica o estrategia @ficha.Id</h2>
+        <dl>
+            <dt>Identificador</dt>
+            <dd><code>@ficha.Id</code></dd>
+            <dt>Tipo</dt>
+            <dd>@ficha.Tipo</dd>
+            <dt>Nombre</dt>
+            <dd>@ficha.Nombre</dd>
+            <dt>Descripción</dt>
+            <dd>@ficha.Descripcion</dd>
+        </dl>
+        <div class="pareja">
+            <button class="boton" @onclick="() => Editar(ficha!)">Editar</button>
+            <button class="boton" @onclick="CerrarFicha">Cerrar</button>
+        </div>
+    </div>
+}
+
+@* ─────────── EL FORMULARIO ─────────── *@
+@if (mostrandoFormulario)
+{
+    <div class="tarjeta-formulario">
+        <h2>@(editando ? "Editar la práctica o estrategia" : "Agregar la práctica o estrategia")</h2>
+
+        <label>
+            Identificador
+            <input type="number" @bind="campoId" disabled="@editando" />
+            @if (editando)
+            {
+                <span class="ayuda">
+                    El identificador no se cambia. Si está mal, se agrega otra ficha y se retira esta.
+                </span>
+            }
+            else
+            {
+                <span class="ayuda">Un número entero que identifica la práctica. No se podrá cambiar después.</span>
+            }
+        </label>
+
+        <label>
+            Tipo
+            <input type="text" maxlength="45" @bind="campoTipo" />
+        </label>
+
+        <label>
+            Nombre
+            <input type="text" maxlength="45" @bind="campoNombre" />
+        </label>
+
+        <label>
+            Descripción
+            <input type="text" maxlength="45" @bind="campoDescripcion" />
+        </label>
+
+        <div class="pareja">
+            @if (editando)
+            {
+                <button class="boton primario" @onclick="GuardarCompleta" disabled="@guardando">
+                    Guardar la ficha completa
+                </button>
+                <button class="boton" @onclick="GuardarLoQueCambio" disabled="@guardando">
+                    Guardar solo lo que cambié
+                </button>
+            }
+            else
+            {
+                <button class="boton primario" @onclick="Crear" disabled="@guardando">
+                    Agregar
+                </button>
+            }
+            <button class="boton" @onclick="Cancelar" disabled="@guardando">Cancelar</button>
+        </div>
+
+        @if (editando)
+        {
+            <span class="ayuda">
+                «La ficha completa» exige que los 3 datos estén diligenciados.
+                «Solo lo que cambié» guarda lo que usted escribió y deja lo demás como estaba.
+            </span>
+        }
+    </div>
+}
+
+@* ─────────── EL LISTADO ─────────── *@
+@if (cargando)
+{
+    <p class="nota">Cargando…</p>
+}
+else if (filas.Count > 0)
+{
+    <div class="tabla-scroll">
+        <table>
+            <thead>
+                <tr>
+                    <th>Id</th>
+                    <th>Tipo</th>
+                    <th>Nombre</th>
+                    <th>Descripción</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var fila in filas)
+                {
+                    <tr>
+                        <td><code>@fila.Id</code></td>
+                        <td>@fila.Tipo</td>
+                        <td>@fila.Nombre</td>
+                        <td>@fila.Descripcion</td>
+                        <td>
+                            <div class="acciones">
+                                <button class="boton" @onclick="() => Ver(fila)">Ver</button>
+                                <button class="boton" @onclick="() => Editar(fila)">Editar</button>
+                                <button class="boton peligro" @onclick="() => Retirar(fila)">Retirar</button>
+                            </div>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+    <p class="nota">@filas.Count ficha(s).</p>
+}
+else
+{
+    <p class="vacio">
+        Todavía no hay prácticas y estrategias. Use «Agregar» para crear la primera.
+    </p>
+}
+
+@code {
+    private List<PracticaEstrategia> filas = new();
+    private List<string> errores = new();
+    private string exito = string.Empty;
+    private PracticaEstrategia? ficha;
+
+    private bool cargando = true;
+    private bool guardando;
+    private bool mostrandoFormulario;
+    private bool editando;
+
+    private int campoId;
+    private string campoTipo = string.Empty;
+    private string campoNombre = string.Empty;
+    private string campoDescripcion = string.Empty;
+
+    protected override async Task OnInitializedAsync() => await Cargar();
+
+    private async Task Cargar()
+    {
+        cargando = true;
+        var r = await Servicio.Listar();
+        cargando = false;
+
+        // Aun con error se pinta la pantalla, con el aviso adentro
+        errores = r.Errores;
+        filas = r.Ok ? r.Datos! : new();
+    }
+
+    /// <summary>
+    /// «Ver» le pide la ficha a la API por su identificador, en vez de mostrar
+    /// la fila que ya está en la tabla: así lo que se ve es el estado actual,
+    /// aunque otra persona la haya cambiado o retirado mientras tanto.
+    /// </summary>
+    private async Task Ver(PracticaEstrategia fila)
+    {
+        mostrandoFormulario = false;
+        exito = string.Empty;
+        var r = await Servicio.Obtener(fila.Id);
+        if (r.Ok)
+        {
+            ficha = r.Datos;
+            errores = new();
+        }
+        else
+        {
+            ficha = null;
+            errores = r.Errores;
+        }
+    }
+
+    private void CerrarFicha() => ficha = null;
+
+    private void Agregar()
+    {
+        Limpiar();
+        ficha = null;
+        editando = false;
+        mostrandoFormulario = true;
+    }
+
+    private void Editar(PracticaEstrategia fila)
+    {
+        campoId = fila.Id;
+        campoTipo = fila.Tipo;
+        campoNombre = fila.Nombre;
+        campoDescripcion = fila.Descripcion;
+        ficha = null;
+        editando = true;
+        mostrandoFormulario = true;
+        errores = new();
+        exito = string.Empty;
+    }
+
+    private void Cancelar()
+    {
+        mostrandoFormulario = false;
+        Limpiar();
+    }
+
+    private void Limpiar()
+    {
+        campoId = 0;
+        campoTipo = string.Empty;
+        campoNombre = string.Empty;
+        campoDescripcion = string.Empty;
+        errores = new();
+        exito = string.Empty;
+    }
+
+    private async Task Crear()
+    {
+        guardando = true;
+        var r = await Servicio.Crear(new PracticaEstrategia
+        {
+            Id = campoId,
+            Tipo = campoTipo.Trim(),
+            Nombre = campoNombre.Trim(),
+            Descripcion = campoDescripcion.Trim(),
+        });
+        guardando = false;
+
+        await TrasGuardar(r, $"Se agregó la práctica o estrategia {campoId}.");
+    }
+
+    private async Task GuardarCompleta()
+    {
+        guardando = true;
+        var r = await Servicio.Reemplazar(campoId, new PracticaEstrategia
+        {
+            Tipo = campoTipo.Trim(),
+            Nombre = campoNombre.Trim(),
+            Descripcion = campoDescripcion.Trim(),
+        });
+        guardando = false;
+
+        await TrasGuardar(r, $"Se guardó la práctica o estrategia {campoId}.");
+    }
+
+    private async Task GuardarLoQueCambio()
+    {
+        guardando = true;
+        var r = await Servicio.Actualizar(
+            campoId,
+            campoTipo,
+            campoNombre,
+            campoDescripcion);
+        guardando = false;
+
+        await TrasGuardar(r, $"Se guardó la práctica o estrategia {campoId}.");
+    }
+
+    /// <summary>
+    /// Si salió bien se cierra el formulario y se recarga; si no, el formulario
+    /// se queda con lo que la persona había escrito.
+    /// </summary>
+    private async Task TrasGuardar(Resultado<bool> r, string mensaje)
+    {
+        if (r.Ok)
+        {
+            mostrandoFormulario = false;
+            exito = mensaje;
+            errores = new();
+            await Cargar();
+        }
+        else
+        {
+            errores = r.Errores;
+            exito = string.Empty;
+        }
+    }
+
+    private async Task Retirar(PracticaEstrategia fila)
+    {
+        // Se pregunta antes: retirar no se deshace desde esta pantalla.
+        var seguro = await JS.InvokeAsync<bool>(
+            "confirm", $"¿Retirar la práctica o estrategia {fila.Id} del uso?");
+        if (!seguro) return;
+
+        var r = await Servicio.Eliminar(fila.Id);
+        if (r.Ok)
+        {
+            exito = $"Se retiró la práctica o estrategia {fila.Id}.";
+            errores = new();
+            if (ficha?.Id == fila.Id) ficha = null;
+            await Cargar();
+        }
+        else
+        {
+            errores = r.Errores;
+            exito = string.Empty;
+        }
+    }
+}

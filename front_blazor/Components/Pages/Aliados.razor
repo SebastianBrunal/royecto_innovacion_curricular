@@ -43,6 +43,32 @@
     <p class="aviso exito">@exito</p>
 }
 
+@* ─────────── LA FICHA (botón «Ver») ─────────── *@
+@if (ficha != null)
+{
+    <div class="tarjeta-formulario ficha">
+        <h2>Aliado @ficha.Nit</h2>
+        <dl>
+            <dt>NIT</dt>
+            <dd><code>@ficha.Nit</code></dd>
+            <dt>Razón social</dt>
+            <dd>@ficha.RazonSocial</dd>
+            <dt>Nombre del contacto</dt>
+            <dd>@ficha.NombreContacto</dd>
+            <dt>Correo</dt>
+            <dd>@ficha.Correo</dd>
+            <dt>Teléfono</dt>
+            <dd>@ficha.Telefono</dd>
+            <dt>Ciudad</dt>
+            <dd>@ficha.Ciudad</dd>
+        </dl>
+        <div class="pareja">
+            <button class="boton" @onclick="() => Editar(ficha!)">Editar</button>
+            <button class="boton" @onclick="CerrarFicha">Cerrar</button>
+        </div>
+    </div>
+}
+
 @* ─────────── EL FORMULARIO ─────────── *@
 @if (mostrandoFormulario)
 {
@@ -165,6 +191,7 @@ else if (filas.Count > 0)
                         <td>@fila.Ciudad</td>
                         <td>
                             <div class="acciones">
+                                <button class="boton" @onclick="() => Ver(fila)">Ver</button>
                                 <button class="boton" @onclick="() => Editar(fila)">Editar</button>
                                 <button class="boton peligro" @onclick="() => Retirar(fila)">Retirar</button>
                             </div>
@@ -189,6 +216,7 @@ else
     private List<Aliado> filas = new();
     private List<string> errores = new();
     private string exito = string.Empty;
+    private Aliado? ficha;
 
     private bool cargando = true;
     private bool guardando;
@@ -216,9 +244,34 @@ else
         filas = r.Ok ? r.Datos! : new();
     }
 
+    /// <summary>
+    /// «Ver» le pide la ficha a la API por su NIT (RF2), en vez de mostrar la
+    /// fila que ya está en la tabla: así lo que se ve es el estado actual,
+    /// aunque otra persona la haya cambiado o retirado mientras tanto.
+    /// </summary>
+    private async Task Ver(Aliado fila)
+    {
+        mostrandoFormulario = false;
+        exito = string.Empty;
+        var r = await Servicio.Obtener(fila.Nit);
+        if (r.Ok)
+        {
+            ficha = r.Datos;
+            errores = new();
+        }
+        else
+        {
+            ficha = null;
+            errores = r.Errores;
+        }
+    }
+
+    private void CerrarFicha() => ficha = null;
+
     private void Agregar()
     {
         Limpiar();
+        ficha = null;
         editando = false;
         mostrandoFormulario = true;
     }
@@ -231,6 +284,7 @@ else
         campoCorreo = fila.Correo;
         campoTelefono = fila.Telefono;
         campoCiudad = fila.Ciudad;
+        ficha = null;
         editando = true;
         mostrandoFormulario = true;
         errores = new();
@@ -337,6 +391,7 @@ else
         {
             exito = $"Se retiró el aliado {fila.Nit}.";
             errores = new();
+            if (ficha?.Nit == fila.Nit) ficha = null;
             await Cargar();
         }
         else

@@ -120,14 +120,30 @@ code { background: #efedea; padding: 1px 6px; border-radius: 4px; font-size: .9e
   padding: 20px; margin: 18px 0; max-width: 620px;
 }
 label { display: block; margin-bottom: 16px; font-weight: 600; font-size: .9rem; }
-input[type=text] {
+input[type=text], input[type=number], textarea {
   display: block; width: 100%; margin-top: 5px; padding: 9px 11px;
   border: 1px solid var(--borde); border-radius: 6px; font: inherit; background: #fff;
 }
-input:focus { outline: 2px solid var(--acento); outline-offset: 1px; }
+textarea { resize: vertical; }
+input:focus, textarea:focus { outline: 2px solid var(--acento); outline-offset: 1px; }
 input:disabled { background: #efedea; color: var(--suave); }
 .ayuda { display: block; margin-top: 4px; font-weight: 400; font-size: .82rem; color: var(--suave); }
 .pareja { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 8px; }
+
+/* --- la ficha del botón «Ver»: etiqueta a la izquierda, valor a la derecha --- */
+.ficha dl { display: grid; grid-template-columns: max-content 1fr; gap: 6px 18px; margin: 0 0 16px; }
+.ficha dt { font-weight: 600; font-size: .85rem; color: var(--suave); }
+.ficha dd { margin: 0; }
+
+/* --- el buscador de las tablas largas --- */
+.buscador { max-width: 420px; margin: 18px 0 0; }
+
+/* En pantallas angostas los tres botones de cada fila bajan de renglón
+   en vez de estirar la tabla. */
+@media (max-width: 640px) {
+  .acciones { flex-wrap: wrap; }
+  .ficha dl { grid-template-columns: 1fr; }
+}
 
 /* --- tarjetas del inicio --- */
 .tarjetas {
