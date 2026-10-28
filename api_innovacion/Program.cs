@@ -10,11 +10,31 @@ builder.WebHost.UseUrls("http://0.0.0.0:8072");
 
 // ============================================================
 // EL ENSAMBLADOR (Artículo 3)
-// Estas dos líneas son el ÚNICO lugar donde una clase concreta aparece junto a su
+// Este bloque es el ÚNICO lugar donde una clase concreta aparece junto a su
 // interfaz. Todo lo demás recibe interfaces por constructor.
 // ============================================================
 builder.Services.AddScoped<IRepositorioAliado, RepositorioAliadoSqlServer>();
 builder.Services.AddScoped<IServicioAliado, ServicioAliado>();
+
+// Las otras seis tablas sin clave foránea de la v1: una pareja por recurso
+// (Artículo 10.1), con el mismo molde que aliado.
+builder.Services.AddScoped<IRepositorioAreaConocimiento, RepositorioAreaConocimientoSqlServer>();
+builder.Services.AddScoped<IServicioAreaConocimiento, ServicioAreaConocimiento>();
+
+builder.Services.AddScoped<IRepositorioUniversidad, RepositorioUniversidadSqlServer>();
+builder.Services.AddScoped<IServicioUniversidad, ServicioUniversidad>();
+
+builder.Services.AddScoped<IRepositorioAspectoNormativo, RepositorioAspectoNormativoSqlServer>();
+builder.Services.AddScoped<IServicioAspectoNormativo, ServicioAspectoNormativo>();
+
+builder.Services.AddScoped<IRepositorioPracticaEstrategia, RepositorioPracticaEstrategiaSqlServer>();
+builder.Services.AddScoped<IServicioPracticaEstrategia, ServicioPracticaEstrategia>();
+
+builder.Services.AddScoped<IRepositorioEnfoque, RepositorioEnfoqueSqlServer>();
+builder.Services.AddScoped<IServicioEnfoque, ServicioEnfoque>();
+
+builder.Services.AddScoped<IRepositorioCaracteristicaInnovacion, RepositorioCaracteristicaInnovacionSqlServer>();
+builder.Services.AddScoped<IServicioCaracteristicaInnovacion, ServicioCaracteristicaInnovacion>();
 
 builder.Services.AddControllers();
 
@@ -55,7 +75,7 @@ app.UseSwaggerUI();
 // Si esto no responde, el problema no es de contrato: la API no está arriba.
 app.MapGet("/", () => Results.Ok(new
 {
-    mensaje = "API Innovación Curricular — módulo de aliados",
+    mensaje = "API Innovación Curricular — tablas sin clave foránea",
     version = "v1",
     contratos = "/swagger"
 }));

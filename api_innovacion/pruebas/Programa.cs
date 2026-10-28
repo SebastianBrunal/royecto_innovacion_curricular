@@ -74,7 +74,8 @@ public class Programa
     /// constancia si no se cumplió. Es un «assert» escrito a mano: lo mismo que
     /// hace Assert.Equal de xUnit, sin instalar el framework.
     /// </summary>
-    private static void Revisar(bool condicion, string ok, string error)
+    // internal: las pruebas de las otras seis tablas (Prueba*.cs) la usan también.
+    internal static void Revisar(bool condicion, string ok, string error)
     {
         Console.WriteLine(condicion ? $"[OK] {ok}" : $"[ERROR] {error}");
         if (!condicion) _bien = false;
@@ -83,6 +84,7 @@ public class Programa
     public static async Task<int> Main(string[] args)
     {
         Console.WriteLine("=== Prueba de capas — SIN base de datos ===");
+        Console.WriteLine("--- aliado ---");
 
         IRepositorioAliado repoFalso = new RepositorioFalso();
         IServicioAliado servicio = new ServicioAliado(repoFalso);
@@ -162,6 +164,15 @@ public class Programa
                 "Tras el borrado, el sistema vuelve a estar vacío.",
                 "Debía quedar vacío otra vez.");
 
+        // Las otras seis tablas de la v1, con el mismo recorrido
+        await PruebaAreaConocimiento.Correr();
+        await PruebaUniversidad.Correr();
+        await PruebaAspectoNormativo.Correr();
+        await PruebaPracticaEstrategia.Correr();
+        await PruebaEnfoque.Correr();
+        await PruebaCaracteristicaInnovacion.Correr();
+
+        Console.WriteLine();
         Console.WriteLine(_bien
             ? "=== Prueba de capas completada CON ÉXITO ==="
             : "=== Prueba de capas FALLIDA: mire los [ERROR] de arriba ===");
