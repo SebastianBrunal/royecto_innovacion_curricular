@@ -54,7 +54,8 @@ llena nunca deja probar.
 
 > **Entrega 1 del equipo:** las otras seis ya están construidas con ese
 > patrón —API y pantalla— y verificadas con `pruebas_humo/humo_api.py` y
-> `pruebas_humo/humo_front.py`. Ver [ENTREGA_1.md](../../../ENTREGA_1.md) y
+> `pruebas_humo/humo_front.py`. La pantalla vive en su propio repositorio,
+> [innovacion_curricular_front](https://github.com/SebastianBrunal/innovacion_curricular_front) (D-v1-11). Ver [ENTREGA_1.md](../../../ENTREGA_1.md) y
 > las clarificaciones C13 a C20 de la [spec](v1_aliado/2_spec.md).
 
 Las demás tablas de la v1 son **ese mismo patrón** con otros nombres. El

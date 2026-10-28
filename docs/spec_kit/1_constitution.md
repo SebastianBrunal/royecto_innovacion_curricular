@@ -51,15 +51,18 @@ esta v1 toma **una** tabla, no veintidós.
 
 ### El front es un TERCER PROCESO
 
-**Blazor Server**, en su propio proyecto y en su propio contenedor, hablando
-con la API **solo por HTTP**. Tres cosas que se comprueban, no que se prometen:
+**Blazor Server**, en su propio proyecto, su propio contenedor **y su propio
+repositorio** ([innovacion_curricular_front](https://github.com/SebastianBrunal/innovacion_curricular_front), decisión D-v1-11),
+hablando con la API **solo por HTTP**. Tres cosas que se comprueban, no que se
+prometen:
 
 1. Su `FrontInnovacion.csproj` **no tiene ningún paquete de acceso a
    datos**.
-2. Su servicio en el compose **no depende de `sqlserver`** ni recibe su
-   cadena de conexión.
+2. Su compose —que está en el otro repositorio— **no conoce `sqlserver`** ni
+   recibe su cadena de conexión: solo la URL de la API.
 3. Y la prueba: **apagando la API, la pantalla sigue en pie**, con su aviso y
-   **sin un solo dato**. Es la sección 5 de `pruebas_humo/humo_front.py`.
+   **sin un solo dato**. Es la sección 5 de `pruebas_humo/humo_front.py`, en
+   el repositorio del front.
 
 ### Y no comparte código con la API, aunque los dos estén en C#
 
@@ -137,8 +140,10 @@ prueba es un criterio de aceptación, no un adorno.
 
 ## Artículo 4 — Un solo comando
 
-`docker compose up -d --build` deja TODO el sistema de la versión
-funcionando, desde la primera versión. Sin pasos manuales y sin instalar
+`docker compose up -d --build` deja funcionando **todo lo de su
+repositorio**, desde la primera versión: aquí, SQL Server con la base
+sembrada y la API; en el repositorio del front, la pantalla (D-v1-11). Se
+levanta primero la API y después el front. Sin pasos manuales y sin instalar
 nada local más allá de Docker. El código va montado como volumen y corre
 con `dotnet watch`: guardar un `.cs` recompila y reinicia solo.
 
@@ -266,22 +271,22 @@ o se corrige el plan, o se enmienda esto.
 
 ---
 
-*Versión 1.0.1 · Ratificada el 2026-08-29 · Última enmienda: Artículo 7, en la entrega 1 del equipo (D-v1-10)*
+*Versión 1.0.2 · Ratificada el 2026-08-29 · Enmiendas de la entrega 1 del equipo: Artículo 7 (D-v1-10) · Artículos 1.1, 4 y 12 — front en su propio repositorio (D-v1-11)*
 
 ## Artículo 12 — La identidad visual es ARTEFACTO DADO
 
 El sistema se construye para la **Universidad Monte Verde**, y esa
 institución **ya decidió cómo se ve**. Su Manual de Identidad Visual
-Corporativa está en la raíz del repositorio:
-[`MANUAL_DE_MARCA.md`](../../MANUAL_DE_MARCA.md).
+Corporativa está en la raíz del **repositorio del front**, que es quien la
+aplica: [`MANUAL_DE_MARCA.md`](https://github.com/SebastianBrunal/innovacion_curricular_front/blob/main/MANUAL_DE_MARCA.md).
 
 Igual que el esquema de la base, **el manual no se discute: se cumple.**
 
 | | |
 |---|---|
-| Los valores del manual viven en | `front_blazor/wwwroot/marca.css` |
+| Los valores del manual viven en | `front_blazor/wwwroot/marca.css` (repositorio del front) |
 | Los estilos de la aplicación usan | `var(--umv-verde)`, nunca `#1F5E4C` |
-| El logosímbolo está en | `marca/` |
+| El logosímbolo está en | `marca/` (repositorio del front) |
 
 **Tres reglas que salen del manual y son de obligado cumplimiento:**
 
@@ -304,4 +309,4 @@ Universidad actualice su manual, se cambia un archivo y nada más.
 > cualquier organización.
 >
 > El porqué de todo esto, con la fórmula del contraste y las referencias,
-> está en [`CONCEPTOS_IDENTIDAD_VISUAL.md`](../CONCEPTOS_IDENTIDAD_VISUAL.md).
+> está en [`CONCEPTOS_IDENTIDAD_VISUAL.md`](https://github.com/SebastianBrunal/innovacion_curricular_front/blob/main/docs/CONCEPTOS_IDENTIDAD_VISUAL.md).

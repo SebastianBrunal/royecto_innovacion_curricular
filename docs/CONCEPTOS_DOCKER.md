@@ -1,5 +1,15 @@
 # Conceptos de Docker — imagen, contenedor, volumen, compose y Kubernetes
 
+> **Nota de la entrega 1 (D-v1-11):** este documento explica el compose del
+> ejemplo del profesor, que tenía **tres** servicios en un solo archivo. En
+> este proyecto el front se fue a **su propio repositorio**
+> ([innovacion_curricular_front](https://github.com/SebastianBrunal/innovacion_curricular_front)),
+> con su propio compose: aquí quedan `sqlserver`, `sqlserver-init` y
+> `api-innovacion`. Los conceptos —imagen, contenedor, volumen, red— son los
+> mismos; donde abajo aparece `front-blazor`, hoy vive en el otro
+> repositorio y llega a la API por `host.docker.internal:8072`, no por el
+> nombre del servicio.
+
 > Documento conceptual del curso. En la v1 usted ya usó Docker (el
 > `docker compose up -d --build` que levanta la BD y la API); aquí está el
 > mapa completo de conceptos, con los ejemplos de este proyecto.

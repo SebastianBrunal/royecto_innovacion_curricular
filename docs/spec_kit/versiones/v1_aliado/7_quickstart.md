@@ -148,7 +148,19 @@ todos deben seguir pasando antes de cerrar la nueva.
 Los criterios de arriba son de la API. **La versión no está cerrada sin su
 pantalla** (Artículo 1.1), y la pantalla se comprueba de dos maneras.
 
+La pantalla vive en **su propio repositorio**
+([innovacion_curricular_front](https://github.com/SebastianBrunal/innovacion_curricular_front), D-v1-11). Con la API de este
+repositorio ya arriba, se levanta allá:
+
+```powershell
+git clone https://github.com/SebastianBrunal/innovacion_curricular_front.git
+cd innovacion_curricular_front
+docker compose up -d --build
+```
+
 ### Con el guion, que hace la mitad automática
+
+En el repositorio del front:
 
 ```powershell
 python pruebas_humo/humo_front.py

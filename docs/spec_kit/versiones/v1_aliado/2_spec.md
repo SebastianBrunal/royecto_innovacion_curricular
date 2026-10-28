@@ -123,7 +123,7 @@ La versión no está cerrada sin ellos (Artículo 1.1).
 
 | # | Criterio | Cómo se comprueba |
 |---|---|---|
-| P1 | La pantalla muestra las filas **que dio la API** | `pruebas_humo/humo_front.py` §3: crea una ficha POR LA API y la busca en el texto visible de la pantalla |
+| P1 | La pantalla muestra las filas **que dio la API** | `pruebas_humo/humo_front.py` (repositorio del front) §3: crea una ficha POR LA API y la busca en el texto visible de la pantalla |
 | P2 | Cada pantalla tiene **dirección propia** | `/` y `/aliados` — ninguna con el nombre de la tabla como parámetro (Artículo 10.1) |
 | P3 | La pantalla **no habla en jerga** | Ni `PUT`, ni `PATCH`, ni `422`, ni `/api/`, ni «SQL Server» aparecen en el texto visible |
 | P4 | Los **dos botones de guardar** se comportan distinto | A mano: el mismo formulario a medio llenar — «la ficha completa» lo rechaza, «solo lo que cambié» lo guarda |
@@ -165,6 +165,7 @@ los hace una persona.
 | C18 | El `PATCH` de aliado no validaba longitudes: un texto de 300 caracteres llegaba al motor y salía **500**. ¿Es 422 o 500? | **422.** Es un cuerpo inválido, igual que en `POST` y `PUT`: los campos del `PATCH` son opcionales, pero si llegan, respetan el tope de su columna. Se corrige también en `AliadoActualizar` | `Peticiones/*Actualizar.cs` |
 | C19 | El documento de la entrega lista los códigos «200, **201**, 400, 404, 500». El contrato del curso fija **200** para el `POST` | **Se mantiene 200.** El Artículo 9 manda cumplir el contrato al pie de la letra, y las siete tablas deben responder igual. Cambiarlo es una enmienda que se haría en el `4_research.md` de otra versión, para todas a la vez | `6_contracts.md` §4 |
 | C20 | `area_conocimiento` trae 218 filas. ¿Hace falta paginar en la v1? | **No**: el listado ya trae hasta `limite=1000`. La pantalla agrega un **buscador** que filtra lo que ya llegó, sin hacer otra consulta | `AreasConocimiento.razor` |
+| C21 | El documento del módulo pide «dos proyectos (repositorios) completamente separados». El ejemplo tenía API y front en uno solo | **Dos repositorios**: este (API, base, spec kit) y `innovacion_curricular_front`. El front solo conoce la URL de la API. Detalle y razones SOLID en D-v1-11 | `4_research.md` D-v1-11 |
 
 ## 7. Definición de TERMINADA
 

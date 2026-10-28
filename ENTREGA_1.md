@@ -8,23 +8,40 @@
 > que traía **una** de las siete tablas (`aliado`) construida de punta a punta.
 > La entrega 1 completa las **otras seis** con el mismo patrón, y ajusta lo que
 > el proyecto de aula exige distinto del ejemplo (los secretos).
+>
+> **Son dos repositorios** (D-v1-11), como pide el documento del módulo:
+>
+> | Repositorio | Qué tiene |
+> |---|---|
+> | **API** — [`royecto_innovacion_curricular`](https://github.com/SebastianBrunal/royecto_innovacion_curricular) (este) | API REST, base de datos, spec kit, Postman, `humo_api.py` |
+> | **Front** — [`innovacion_curricular_front`](https://github.com/SebastianBrunal/innovacion_curricular_front) | Blazor Server, identidad visual, `humo_front.py`, `recorrido_clics.js` |
 
 ---
 
 ## 1. Cómo se corre
 
-Solo hace falta **Docker Desktop**.
+Solo hace falta **Docker Desktop**. Primero la API, después el front.
+
+**1. La API** (este repositorio):
 
 ```powershell
-git clone <url de este repositorio>
-cd proyecto_innovacion_curricular
+git clone https://github.com/SebastianBrunal/royecto_innovacion_curricular.git
+cd royecto_innovacion_curricular
 copy .env.example .env          # y ponga su propia clave en MSSQL_SA_PASSWORD
+docker compose up -d --build
+```
+
+**2. El front** (su repositorio), en otra carpeta:
+
+```powershell
+git clone https://github.com/SebastianBrunal/innovacion_curricular_front.git
+cd innovacion_curricular_front
 docker compose up -d --build
 ```
 
 | Qué | Dónde |
 |---|---|
-| **La pantalla** | http://localhost:8073 |
+| **La pantalla** | http://localhost:8073 (repositorio del front) |
 | API — diagnóstico | http://localhost:8072/ |
 | Documentación interactiva (Swagger) | http://localhost:8072/swagger |
 | SQL Server (opcional, SSMS / SQLTools) | `localhost,11471` · usuario `sa` · clave: la de su `.env` |
@@ -52,11 +69,11 @@ docker compose up -d --build
 
 | Requisito | Dónde |
 |---|---|
-| Listado con **ver**, editar y eliminar | Una página por tabla en `front_blazor/Components/Pages/` — botones **Ver**, **Editar**, **Retirar** en cada fila |
+| Listado con **ver**, editar y eliminar | Una página por tabla en `front_blazor/Components/Pages/` *(repositorio del front)* — botones **Ver**, **Editar**, **Retirar** en cada fila |
 | Formulario para crear | Botón **Agregar** de cada página |
 | Formulario para editar | **Editar** → «Guardar la ficha completa» (`PUT`) o «Guardar solo lo que cambié» (`PATCH`) |
 | Eliminar con confirmación (lógico) | **Retirar** pide confirmación y llama al `DELETE` |
-| Consume la API, no la base | `front_blazor/Servicios/Servicio*.cs` hablan HTTP con la API; el proyecto del front no tiene ningún driver de base de datos |
+| Consume la API, no la base | `front_blazor/Servicios/Servicio*.cs` *(repositorio del front)* hablan HTTP con la API; el proyecto del front no tiene ningún driver de base de datos |
 
 ## 3. Las siete tablas
 
@@ -83,16 +100,16 @@ api_innovacion/
   Servicios/IServicio<Entidad>.cs + Servicio<Entidad>.cs
   Controllers/<Entidad>Controller.cs
   pruebas/RepositorioFalso<Entidad>.cs + Prueba<Entidad>.cs   sin base de datos
-front_blazor/
+front_blazor/   (en el repositorio del front)
   Servicios/Servicio<Entidad>.cs               lo único que habla con la API
   Components/Pages/<Plural>.razor              la pantalla
 ```
 
 ## 4. Decisiones tomadas en esta entrega
 
-Quedaron como **Clarificaciones C13 a C20** en
+Quedaron como **Clarificaciones C13 a C21** en
 [`2_spec.md`](docs/spec_kit/versiones/v1_aliado/2_spec.md) §6 y como
-**D-v1-10** en [`4_research.md`](docs/spec_kit/versiones/v1_aliado/4_research.md).
+**D-v1-10** y **D-v1-11** en [`4_research.md`](docs/spec_kit/versiones/v1_aliado/4_research.md).
 En resumen:
 
 | # | Decisión |
@@ -105,7 +122,9 @@ En resumen:
 | C18 | El `PATCH` también valida longitudes → 422 en vez de un 500 del motor (se corrigió en `aliado` también) |
 | C19 | El `POST` responde 200 y no 201: lo fija el contrato del curso, y las siete tablas responden igual |
 | C20 | Sin paginación en la v1; la pantalla de áreas trae un buscador sobre las 218 filas |
+| C21 | API y front en dos repositorios, como pide el documento del módulo (ver D-v1-11) |
 | D-v1-10 | La clave de la base sale del `.env` (enmienda del Artículo 7) |
+| D-v1-11 | El front y la API en **repositorios separados** (SOLID: responsabilidad única e inversión de dependencias; el front solo conoce la URL de la API) |
 
 ## 5. Evidencia — cómo se verificó
 
@@ -113,14 +132,14 @@ En resumen:
 |---|---|---|
 | `dotnet run --project api_innovacion/pruebas` | Los servicios de las 7 tablas con un repositorio **falso** en memoria, **sin** SQL Server | 55 comprobaciones en verde |
 | `python pruebas_humo/humo_api.py` | Las 7 tablas: listar, crear, obtener, `PUT`, `PUT` sin un campo → 422, el mismo cuerpo por `PATCH` → 200, `PATCH` vacío → 400, 404, llave duplicada → 500, `DELETE` → 200, segundo `DELETE` → 404 **y la fila sigue en la base con `activo = 0`** | Todo en verde |
-| `python pruebas_humo/humo_front.py` | Las 8 pantallas responden por su dirección, muestran los datos que dio la API, no hablan en jerga, y **con la API congelada la pantalla sigue en pie sin datos** | Todo en verde |
-| `node pruebas_humo/recorrido_clics.js` *(opcional, requiere Node y Playwright)* | Clics reales en las 7 pantallas: agregar, ver, «la ficha completa» a medio llenar se rechaza sin borrar lo escrito, «solo lo que cambié» guarda, retirar con confirmación | Todo en verde |
+| `python pruebas_humo/humo_front.py` *(repositorio del front)* | Las 8 pantallas responden por su dirección, muestran los datos que dio la API, no hablan en jerga, y **con la API congelada la pantalla sigue en pie sin datos** | Todo en verde |
+| `node pruebas_humo/recorrido_clics.js` *(repositorio del front; opcional, requiere Node y Playwright)* | Clics reales en las 7 pantallas: agregar, ver, «la ficha completa» a medio llenar se rechaza sin borrar lo escrito, «solo lo que cambié» guarda, retirar con confirmación | Todo en verde |
 | Colección de Postman | 14 peticiones de `aliado` + 12 por cada tabla nueva | Los códigos coinciden con las descripciones |
 
 ## 6. Lo que falta para cerrar la v1 (lo hace una persona)
 
 - [ ] Recorrer a mano el [`7_quickstart.md`](docs/spec_kit/versiones/v1_aliado/7_quickstart.md) en el PC del equipo.
 - [ ] Revisar y **firmar** el [`9_checklist.md`](docs/spec_kit/versiones/v1_aliado/9_checklist.md) — lo marca una persona, no la IA.
-- [ ] Revisar las decisiones C13–C20 y D-v1-10: si el equipo no está de acuerdo con alguna, se cambia en la spec **y** en el código.
+- [ ] Revisar las decisiones C13–C21, D-v1-10 y D-v1-11: si el equipo no está de acuerdo con alguna, se cambia en la spec **y** en el código.
 - [ ] Completar los prompts del equipo en [`PROMPTS_ENTREGA1.md`](docs/spec_kit/versiones/v1_aliado/PROMPTS_ENTREGA1.md).
-- [ ] `git tag v1` y `git push --tags`.
+- [ ] `git tag v1` y `git push --tags` **en los dos repositorios**.

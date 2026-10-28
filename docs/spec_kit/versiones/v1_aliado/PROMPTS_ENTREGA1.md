@@ -94,6 +94,23 @@ y sus catálogos, el spec kit de la v1, y `aliado` construida como ejemplo.
 La instrucción implícita fue: completar las otras seis **con ese mismo
 patrón**, sin cambiar la especificación.
 
+### Prompt 5 — separar el front de la API
+
+Con la entrega ya subida, le pedí a la IA dividir el proyecto en dos
+repositorios:
+
+```text
+hay que dividir el front de el api por metodo solid en los repositorios hazlo
+```
+
+El ejemplo del profesor tenía API y front en un solo repositorio, pero el
+documento del módulo pide «dos proyectos (repositorios) completamente
+separados». La IA separó el front a
+[innovacion_curricular_front](https://github.com/SebastianBrunal/innovacion_curricular_front)
+**conservando su historia** (`git filter-repo`), le dio su propio
+`docker-compose.yml` y lo hizo llegar a la API **solo por su URL**. Quedó
+registrado como D-v1-11 y C21.
+
 ## 3. Lo que hubo que corregirle a la IA
 
 | # | Qué hizo la IA | Por qué estaba mal | Cómo se corrigió | Destino (GUIA_IA1, «los tres destinos») |
@@ -110,8 +127,8 @@ Y dos que encontró la propia IA al probar, y que reviso yo antes de aceptarlas:
 
 ## 4. Decisiones que propuso la IA — las reviso y las acepto (o no) yo
 
-Están escritas en [2_spec.md](2_spec.md) §6 (C13 a C20) y en
-[4_research.md](4_research.md) (D-v1-10). La IA **propone**; la decisión es
+Están escritas en [2_spec.md](2_spec.md) §6 (C13 a C21) y en
+[4_research.md](4_research.md) (D-v1-10 y D-v1-11). La IA **propone**; la decisión es
 del equipo. Marque cada una antes de firmar el `9_checklist.md`:
 
 | # | Propuesta | ¿Aceptada? | Comentario del equipo |
@@ -125,6 +142,7 @@ del equipo. Marque cada una antes de firmar el `9_checklist.md`:
 | C19 | `POST` responde 200 (contrato del curso), no 201 (PDF) | ☐ | |
 | C20 | Buscador en áreas de conocimiento, sin paginar | ☐ | |
 | D-v1-10 | Clave de la base en `.env` | ☐ | |
+| D-v1-11 / C21 | Front y API en repositorios separados; el front solo conoce la URL de la API | ☐ | |
 
 > C19 es la que más conviene preguntarle al profesor: el PDF menciona 201 y
 > el contrato del curso dice 200. Se dejó 200 porque el Artículo 9 manda
@@ -144,7 +162,8 @@ enfoque y car_innovacion.
 
 Primero lee docs/spec_kit/1_constitution.md y los documentos de
 docs/spec_kit/versiones/v1_aliado/ (2_spec a 8_tasks), y el código de
-aliado en api_innovacion/ y front_blazor/. Resume en 10 líneas qué vas a
+aliado en api_innovacion/ y, en el repositorio del front
+(innovacion_curricular_front), front_blazor/. Resume en 10 líneas qué vas a
 construir y espera mi OK.
 
 Reglas:
@@ -161,8 +180,11 @@ Reglas:
 7. Si algo de la spec admite dos lecturas, PREGÚNTAME y escríbelo como
    Clarificación en 2_spec.md. No asumas.
 8. La clave de la base va en .env, no en archivos versionados.
-9. Al terminar cada tabla: compila y corre la prueba de capas. Al final:
-   pruebas_humo/humo_api.py y humo_front.py, con la salida real.
+9. El front y la API van en repositorios separados: el front solo conoce
+   la URL de la API, nunca la base.
+10. Al terminar cada tabla: compila y corre la prueba de capas. Al final:
+   pruebas_humo/humo_api.py (aquí) y humo_front.py (en el front), con la
+   salida real.
 ```
 
 ## 6. Lo que verifiqué yo — a completar por el equipo
@@ -171,7 +193,7 @@ Reglas:
 > que se le muestra al profesor en la sustentación. No se llena con frases
 > genéricas.
 
-- [ ] Corrí `docker compose up -d --build` en mi PC (Windows) y abrí las 7 pantallas.
+- [ ] Corrí `docker compose up -d --build` en los dos repositorios (primero la API, después el front) en mi PC y abrí las 7 pantallas.
 - [ ] Hice el recorrido a mano del [7_quickstart.md](7_quickstart.md).
 - [ ] Revisé el código de al menos una tabla completa (controlador → servicio → repositorio) y sé explicar por qué cada capa está separada.
 - [ ] Revisé y marqué las decisiones de la §4.

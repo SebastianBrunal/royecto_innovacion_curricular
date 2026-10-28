@@ -1,17 +1,21 @@
-# Módulo Innovación Curricular — ejemplo de referencia
+# Módulo Innovación Curricular — API REST
+
+> **Dos repositorios** (D-v1-11): este tiene la **API**, la base de datos y el
+> spec kit. La **pantalla** está en
+> **[innovacion_curricular_front](https://github.com/SebastianBrunal/innovacion_curricular_front)**.
 
 > ## ✅ Entrega 1 del equipo: las 7 tablas sin clave foránea
 >
 > Este repositorio parte del ejemplo del profesor, que traía `aliado`, y
 > **completa las otras seis** —`area_conocimiento`, `universidad`,
 > `aspecto_normativo`, `practica_estrategia`, `enfoque` y `car_innovacion`—
-> con su API y su pantalla.
+> con su API y su pantalla (la pantalla, en [su repositorio](https://github.com/SebastianBrunal/innovacion_curricular_front)).
 >
 > | | |
 > |---|---|
 > | Qué se entregó, dónde está cada requisito y cómo se verificó | **[ENTREGA_1.md](ENTREGA_1.md)** |
 > | Los prompts usados y lo que hubo que corregirle a la IA | [PROMPTS_ENTREGA1.md](docs/spec_kit/versiones/v1_aliado/PROMPTS_ENTREGA1.md) |
-> | Las decisiones nuevas | Clarificaciones C13–C20 en [2_spec.md](docs/spec_kit/versiones/v1_aliado/2_spec.md) · D-v1-10 en [4_research.md](docs/spec_kit/versiones/v1_aliado/4_research.md) |
+> | Las decisiones nuevas | Clarificaciones C13–C21 en [2_spec.md](docs/spec_kit/versiones/v1_aliado/2_spec.md) · D-v1-10 (secretos) y D-v1-11 (front en otro repositorio) en [4_research.md](docs/spec_kit/versiones/v1_aliado/4_research.md) |
 > | Los contratos de las seis tablas nuevas | [6_contracts.md §8](docs/spec_kit/versiones/v1_aliado/6_contracts.md) |
 >
 > **Diferencia con el ejemplo:** la clave de la base ya **no** está en el
@@ -46,11 +50,11 @@ docker compose up -d --build
 
 La primera vez tarda unos minutos: descarga las imágenes, espera a que el
 motor **responda** (no solo a que exista), crea la base con sus 25 tablas y
-sus catálogos, y compila la API **y la pantalla**. Al terminar:
+sus catálogos, y compila la API. Al terminar:
 
 | Qué | Dónde |
 |---|---|
-| **LA PANTALLA** — empiece por aquí | **http://localhost:8073** |
+| **LA PANTALLA** | en el [repositorio del front](https://github.com/SebastianBrunal/innovacion_curricular_front): se levanta allá, con su propio `docker compose up -d --build`, y queda en http://localhost:8073 |
 | **API — diagnóstico** | http://localhost:8072/ |
 | **Documentación interactiva** | http://localhost:8072/swagger |
 | Listado de aliados | http://localhost:8072/api/aliado |
@@ -113,20 +117,11 @@ proyecto_innovacion_curricular1/
 │   ├── Repositorios/                   CAPA 3: datos — el SQL con Dapper
 │   ├── Excepciones/                    cómo el negocio avisa un 404 sin hablar de HTTP
 │   └── pruebas/                        el servicio con un repositorio de mentiras
-├── front_blazor/                     LA PANTALLA: Blazor Server, un TERCER proceso
-│   ├── Program.cs                    registra UN servicio por recurso
-│   ├── Servicios/                    lo ÚNICO que habla HTTP con la API
-│   ├── Components/Pages/             una pantalla por recurso, con dirección propia
-│   └── wwwroot/app.css               los estilos, servidos del propio contenedor
-│
-├── pruebas_humo/                     humo_front.py: recorre el sistema DESDE LA
-│                                     PANTALLA y apaga la API para probar que
-│                                     son procesos distintos · humo_api.py: el
-│                                     contrato completo en las 7 tablas ·
-│                                     recorrido_clics.js: clics reales (opcional)
+├── pruebas_humo/humo_api.py            el contrato completo en las 7 tablas, y el
+│                                       borrado lógico comprobado en la base
 ├── docs/spec_kit/                      LA FUENTE DE VERDAD (ver abajo)
 ├── postman/                            los 14 endpoints listos para probar con clics
-├── docker-compose.yml                  TODO el sistema declarado en un archivo
+├── docker-compose.yml                  SQL Server + inicializador + API (el front tiene el suyo)
 └── ProyectosDeAula/                    el material del curso
 ```
 
@@ -195,10 +190,15 @@ tendría cualquier organización real.
 
 | Archivo | Qué es |
 |---|---|
-| [`MANUAL_DE_MARCA.md`](MANUAL_DE_MARCA.md) | El Manual de Identidad Visual Corporativa: logosímbolo, paleta, tipografía, tamaño mínimo, área de reserva y usos incorrectos |
-| [`docs/CONCEPTOS_IDENTIDAD_VISUAL.md`](docs/CONCEPTOS_IDENTIDAD_VISUAL.md) | Qué es una identidad visual, por qué obliga al software y cómo se calcula el contraste — con referencias verificables |
-| [`front_blazor/wwwroot/marca.css`](front_blazor/wwwroot/marca.css) | Los valores del manual, en un archivo aparte de los estilos de la aplicación |
-| [`marca/`](marca/) | El logosímbolo en sus cuatro versiones |
+La identidad visual la aplica la pantalla, así que vive en el
+[repositorio del front](https://github.com/SebastianBrunal/innovacion_curricular_front):
+
+| Archivo | Qué es |
+|---|---|
+| [`MANUAL_DE_MARCA.md`](https://github.com/SebastianBrunal/innovacion_curricular_front/blob/main/MANUAL_DE_MARCA.md) | El Manual de Identidad Visual Corporativa: logosímbolo, paleta, tipografía, tamaño mínimo, área de reserva y usos incorrectos |
+| [`docs/CONCEPTOS_IDENTIDAD_VISUAL.md`](https://github.com/SebastianBrunal/innovacion_curricular_front/blob/main/docs/CONCEPTOS_IDENTIDAD_VISUAL.md) | Qué es una identidad visual, por qué obliga al software y cómo se calcula el contraste — con referencias verificables |
+| [`front_blazor/wwwroot/marca.css`](https://github.com/SebastianBrunal/innovacion_curricular_front/blob/main/front_blazor/wwwroot/marca.css) | Los valores del manual, en un archivo aparte de los estilos de la aplicación |
+| [`marca/`](https://github.com/SebastianBrunal/innovacion_curricular_front/tree/main/marca) | El logosímbolo en sus cuatro versiones |
 
 **Los colores no se cambian.** El artículo tercero de la resolución que
 adopta el manual es explícito, y la **versión 4** del proyecto evalúa que la

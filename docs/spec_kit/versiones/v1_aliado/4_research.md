@@ -203,3 +203,49 @@ rotarla.
 
 **Consecuencia.** El arranque pasa de un comando a dos la primera vez
 (copiar el `.env.example`). Es el precio de que la clave no esté en GitHub.
+
+## D-v1-11 — El front y la API en repositorios separados
+
+**Contexto.** El ejemplo del profesor tenía la API y el front en el mismo
+repositorio, como dos carpetas y un solo `docker-compose.yml`. El documento
+del módulo pide otra cosa: **«dos proyectos (repositorios) completamente
+separados»** (§3) y, desde la entrega 2, **«repositorio en GitHub para cada
+proyecto (API y Frontend)»**.
+
+**Decisión.** Dos repositorios:
+
+| Repositorio | Qué tiene |
+|---|---|
+| `royecto_innovacion_curricular` (este) | La API, la base (`db/`), su compose (SQL Server + inicializador + API), Postman, `humo_api.py` y **el spec kit** —la metodología lo ubica en el repositorio de la API— |
+| [`innovacion_curricular_front`](https://github.com/SebastianBrunal/innovacion_curricular_front) | El front Blazor, su compose (solo el front), la identidad visual (`marca/`, `MANUAL_DE_MARCA.md`), `humo_front.py` y `recorrido_clics.js` |
+
+El front se separó con `git filter-repo`, **conservando la historia** de
+sus archivos.
+
+**Es SOLID aplicado a nivel de sistema:**
+
+- **S — responsabilidad única.** Cada repositorio tiene una sola razón para
+  cambiar: la API cambia por datos y reglas; el front, por cómo se ve y se
+  usa. Un commit de estilos ya no pasa por el repositorio que tiene el SQL.
+- **D — inversión de dependencias.** El front depende de una abstracción —el
+  contrato HTTP de `6_contracts.md`— y no de la implementación. Lo único que
+  sabe de la API es su URL (`UrlApi`).
+- **O — abierto/cerrado.** La API puede cambiar de motor, de servidor o de
+  lenguaje sin tocar el front, mientras cumpla el contrato.
+
+**Consecuencias.**
+
+1. El front ya no encuentra a la API por el **nombre del servicio**
+   (`api-innovacion`), porque está en otro compose: la busca en el puerto
+   publicado del PC, `http://host.docker.internal:8072`, configurable con
+   `URL_API`.
+2. «Un solo comando» pasa a ser **uno por repositorio** (Artículo 4): primero
+   la API, después el front.
+3. `humo_front.py` congela la API por su `container_name`
+   (`innovacion-api`), no por el servicio del compose.
+4. Cambiar el contrato ahora exige **dos commits en dos repositorios**. Es el
+   precio, y también la protección: nadie lo cambia sin darse cuenta.
+
+**Alternativa descartada.** Un solo repositorio con dos carpetas, como el
+ejemplo. Es más cómodo, pero no cumple lo que pide el módulo y permite que
+un cambio en un lado se cuele sin revisar el otro.

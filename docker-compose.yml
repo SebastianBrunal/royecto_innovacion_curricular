@@ -1,11 +1,12 @@
 # ==============================================================
-# Módulo INNOVACIÓN CURRICULAR — versión 1
+# Módulo INNOVACIÓN CURRICULAR — versión 1 · repositorio de la API
 #
-#   FRONT Blazor (:8073) → API innovacion (C#, :8072) → SQL Server (innovacion_local)
+#   API innovacion (C#, :8072) → SQL Server (innovacion_local)
 #
-# TRES procesos, no dos. El front es una aplicación aparte que solo
-# habla con la API por HTTP: no tiene línea hacia SQL Server, y no la
-# va a tener nunca.
+# El FRONT no está aquí: vive en su propio repositorio
+# (SebastianBrunal/innovacion_curricular_front), con su propio compose,
+# y llega a esta API por el puerto 8072 que se publica abajo (D-v1-11).
+# No tiene línea hacia SQL Server, y no la va a tener nunca.
 #
 # Antes, UNA sola vez:  copiar .env.example a .env y poner su clave
 #   (Windows: copy .env.example .env  ·  Linux/Mac: cp .env.example .env)
@@ -74,27 +75,6 @@ services:
     depends_on:
       sqlserver-init:
         condition: service_completed_successfully   # espera a que la base esté SEMBRADA
-
-  # --- EL FRONT: Blazor Server, un TERCER proceso ---
-  front-blazor:
-    build: ./front_blazor
-    container_name: innovacion-front
-    restart: unless-stopped
-    ports:
-      - "8073:8073"                # http://localhost:8073
-    volumes:
-      - ./front_blazor:/app        # el código montado: guardar un .razor recompila solo
-      - /app/bin                   # bin y obj quedan DENTRO del contenedor
-      - /app/obj
-    environment:
-      # El NOMBRE del servicio, no localhost: dentro del contenedor del front,
-      # localhost sería el front mismo.
-      - UrlApi=http://api-innovacion:8072
-    depends_on:
-      - api-innovacion
-      # NO depende de sqlserver, y eso no es un olvido: el front no tiene nada
-      # que hacer con la base. Si algún día necesitara esa dependencia, sería
-      # la señal de que alguien rompió la arquitectura.
 
 volumes:
   mssqldata:
