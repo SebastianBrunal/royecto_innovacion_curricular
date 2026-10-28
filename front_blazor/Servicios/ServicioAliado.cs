@@ -86,11 +86,6 @@ public class ServicioAliado
         PropertyNameCaseInsensitive = true
     };
 
-    private static readonly List<string> NoDisponible = new()
-    {
-        "El servicio no está disponible. ¿Está arriba la API?"
-    };
-
     public ServicioAliado(HttpClient http)
     {
         _http = http;
@@ -114,7 +109,7 @@ public class ServicioAliado
 
             if (!r.IsSuccessStatusCode)
             {
-                return Resultado<List<Aliado>>.Mal(await Mensajes(r));
+                return Resultado<List<Aliado>>.Mal(await SobreDeError.Mensajes(r));
             }
 
             // El sobre del contrato: { tabla, limite, total, datos[] }
@@ -126,11 +121,11 @@ public class ServicioAliado
         }
         catch (HttpRequestException)
         {
-            return Resultado<List<Aliado>>.Mal(NoDisponible);
+            return Resultado<List<Aliado>>.Mal(SobreDeError.NoDisponible());
         }
         catch (TaskCanceledException)
         {
-            return Resultado<List<Aliado>>.Mal(NoDisponible);
+            return Resultado<List<Aliado>>.Mal(SobreDeError.NoDisponible());
         }
     }
 
@@ -144,7 +139,7 @@ public class ServicioAliado
             var r = await _http.GetAsync($"/api/aliado/{nit}");
             if (!r.IsSuccessStatusCode)
             {
-                return Resultado<Aliado>.Mal(await Mensajes(r));
+                return Resultado<Aliado>.Mal(await SobreDeError.Mensajes(r));
             }
 
             var ficha = await r.Content.ReadFromJsonAsync<Aliado>(_opciones);
@@ -152,7 +147,7 @@ public class ServicioAliado
         }
         catch (Exception e) when (e is HttpRequestException or TaskCanceledException)
         {
-            return Resultado<Aliado>.Mal(NoDisponible);
+            return Resultado<Aliado>.Mal(SobreDeError.NoDisponible());
         }
     }
 
@@ -234,53 +229,11 @@ public class ServicioAliado
             var r = await _http.SendAsync(peticion);
             return r.IsSuccessStatusCode
                 ? Resultado<bool>.Bien(true)
-                : Resultado<bool>.Mal(await Mensajes(r));
+                : Resultado<bool>.Mal(await SobreDeError.Mensajes(r));
         }
         catch (Exception e) when (e is HttpRequestException or TaskCanceledException)
         {
-            return Resultado<bool>.Mal(NoDisponible);
-        }
-    }
-
-    /// <summary>
-    /// Traduce a texto los errores que produce ESTA API.
-    ///
-    /// El sobre es plano y tiene dos formas:
-    ///   { estado, mensaje, detalle }   → 400, 404, 500
-    ///   { estado, mensaje, errores[] } → 422, cuando el cuerpo no cumple
-    ///
-    /// **Este método es el único sitio del front que conoce ese formato.** Si
-    /// mañana la API cambia el sobre, se cambia aquí y en ninguna página.
-    /// </summary>
-    private static async Task<List<string>> Mensajes(HttpResponseMessage r)
-    {
-        try
-        {
-            var sobre = await r.Content.ReadFromJsonAsync<JsonElement>();
-
-            if (sobre.TryGetProperty("errores", out var errores)
-                && errores.ValueKind == JsonValueKind.Array
-                && errores.GetArrayLength() > 0)
-            {
-                return errores.EnumerateArray()
-                    .Select(x => x.GetString() ?? "")
-                    .Where(x => x.Length > 0)
-                    .ToList();
-            }
-
-            var partes = new List<string>();
-            if (sobre.TryGetProperty("mensaje", out var m)) partes.Add(m.GetString() ?? "");
-            if (sobre.TryGetProperty("detalle", out var dt)) partes.Add(dt.GetString() ?? "");
-            partes.RemoveAll(string.IsNullOrWhiteSpace);
-
-            return partes.Count > 0
-                ? partes
-                : new List<string> { "No se pudo completar la operación." };
-        }
-        catch
-        {
-            // Un 500 puede devolver HTML en vez de JSON.
-            return new List<string> { "No se pudo completar la operación." };
+            return Resultado<bool>.Mal(SobreDeError.NoDisponible());
         }
     }
 }
