@@ -19,16 +19,23 @@ catálogos, y compila la API. Al terminar:
 | Listado de aliados | http://localhost:8072/api/aliado |
 | SQL Server (SSMS o SQLTools, opcional) | `localhost,11471` · usuario `sa` |
 
-> **¿La contraseña?** Está en el `docker-compose.yml`, a la vista: esta es
-> una plantilla didáctica y esa es la excepción declarada en el Artículo 7
-> de la [constitución](../../1_constitution.md). **Para correr el sistema
-> no hace falta** —el compose se la entrega a los contenedores—; solo se
-> necesita para conectarse por fuera con SSMS o SQLTools.
+> **¿La contraseña?** Está en **su** `.env`, que no se sube a git
+> (Artículo 7 de la [constitución](../../1_constitution.md), D-v1-10). La
+> primera vez se crea copiando la plantilla y poniendo una clave propia
+> (8+ caracteres, con mayúscula, minúscula, dígito y símbolo):
 >
-> **En su proyecto de aula eso no se copia:** ahí va en un `.env` fuera de
-> git, con un `.env.example` adentro.
+> ```powershell
+> copy .env.example .env      # y edite MSSQL_SA_PASSWORD
+> ```
+>
+> Se necesita para conectarse por fuera con SSMS o SQLTools. Para correr la
+> API **sin Docker**, defina antes la cadena:
+>
+> ```powershell
+> $env:ConnectionStrings__SqlServer = "Server=localhost,11471;Database=innovacion_local;User Id=sa;Password=<su clave>;TrustServerCertificate=True;"
+> ```
 
-**Si cambia la contraseña**, no basta con editar el compose:
+**Si cambia la contraseña**, no basta con editar el `.env`:
 
 ```powershell
 docker compose down -v        # -v borra el volumen: la base olvida el sa viejo

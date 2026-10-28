@@ -181,3 +181,25 @@ criterio 2 comprueba el **204** en vez de un total. Y el ejemplo demuestra
 algo que el otro no puede: que el sistema funciona **antes** de tener
 datos. **Estado:** vigente.
 
+## D-v1-10 — La clave de la base sale del `.env` (enmienda del Artículo 7)
+
+**Contexto.** El ejemplo del profesor llevaba la contraseña de `sa` escrita
+en el `docker-compose.yml` y en el `appsettings.json`, como excepción
+declarada de una plantilla didáctica. La metodología del proyecto de aula
+dice lo contrario: **un secreto quemado anula el criterio de seguridad de la
+versión**, y este repositorio ya no es la plantilla: es el del equipo.
+
+**Decisión.** La clave vive en un `.env` fuera de git. El repositorio trae
+`.env.example` con un valor de mentira. El compose la lee con
+`${MSSQL_SA_PASSWORD:?…}`, que **detiene el arranque con un mensaje claro**
+si falta el `.env`, en vez de crear un `sa` sin clave. El `appsettings.json`
+queda sin cadena de conexión: fuera de Docker se pasa por la variable de
+entorno `ConnectionStrings__SqlServer`.
+
+**Alternativa descartada.** Dejarla como estaba porque «el sistema corre en
+contenedores desechables». Es cierto hoy, pero el sistema se publica en la
+v4, y la historia de git no olvida: una clave que se sube una vez hay que
+rotarla.
+
+**Consecuencia.** El arranque pasa de un comando a dos la primera vez
+(copiar el `.env.example`). Es el precio de que la clave no esté en GitHub.

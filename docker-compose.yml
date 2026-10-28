@@ -7,6 +7,9 @@
 # habla con la API por HTTP: no tiene línea hacia SQL Server, y no la
 # va a tener nunca.
 #
+# Antes, UNA sola vez:  copiar .env.example a .env y poner su clave
+#   (Windows: copy .env.example .env  ·  Linux/Mac: cp .env.example .env)
+#
 # Uso: docker compose up -d --build     (UN solo comando)
 # Reset de la BD: docker compose down -v && docker compose up -d
 #
@@ -22,9 +25,10 @@ services:
     restart: unless-stopped
     environment:
       - ACCEPT_EULA=Y
-      # Contraseña a la vista: excepción declarada del Artículo 7 — plantilla
-      # didáctica en contenedores desechables. En un proyecto real va en .env.
-      - MSSQL_SA_PASSWORD=Aplicacionweb123!
+      # La clave sale del .env, que NO está en git (Artículo 7, D-v1-10).
+      # Si el .env no existe, compose se detiene con este mensaje en vez de
+      # crear un sa sin clave.
+      - MSSQL_SA_PASSWORD=${MSSQL_SA_PASSWORD:?Falta el .env - copie .env.example a .env}
     ports:
       - "11471:1433"
     volumes:
@@ -44,7 +48,7 @@ services:
     container_name: innovacion-sqlserver-init
     restart: "no"
     environment:
-      - MSSQL_SA_PASSWORD=Aplicacionweb123!
+      - MSSQL_SA_PASSWORD=${MSSQL_SA_PASSWORD:?Falta el .env - copie .env.example a .env}
     volumes:
       - ./db:/scripts:ro
     depends_on:
@@ -66,7 +70,7 @@ services:
     environment:
       # El host es el NOMBRE del servicio. El doble guion bajo hace que ASP.NET
       # lea esto como ConnectionStrings:SqlServer y SOBREESCRIBA appsettings.json.
-      - ConnectionStrings__SqlServer=Server=sqlserver,1433;Database=innovacion_local;User Id=sa;Password=Aplicacionweb123!;TrustServerCertificate=True;
+      - ConnectionStrings__SqlServer=Server=sqlserver,1433;Database=innovacion_local;User Id=sa;Password=${MSSQL_SA_PASSWORD:?Falta el .env - copie .env.example a .env};TrustServerCertificate=True;
     depends_on:
       sqlserver-init:
         condition: service_completed_successfully   # espera a que la base esté SEMBRADA

@@ -372,7 +372,7 @@ docker network create proyecto_innovacion_curricular1_default
 # 2. sqlserver
 docker run -d --name innovacion-sqlserver --network proyecto_innovacion_curricular1_default --restart unless-stopped `
   -e "ACCEPT_EULA=Y" `
-  -e "MSSQL_SA_PASSWORD=Aplicacionweb123!" `
+  -e "MSSQL_SA_PASSWORD=$env:MSSQL_SA_PASSWORD" `
   -v mssqldata:/var/opt/mssql `
   -p 11471:1433 mcr.microsoft.com/mssql/server:2022-latest
 
@@ -380,13 +380,13 @@ docker run -d --name innovacion-sqlserver --network proyecto_innovacion_curricul
 
 # 4. sqlserver-init
 docker run -d --name innovacion-sqlserver-init --network proyecto_innovacion_curricular1_default --restart no --entrypoint /bin/bash `
-  -e "MSSQL_SA_PASSWORD=Aplicacionweb123!" `
+  -e "MSSQL_SA_PASSWORD=$env:MSSQL_SA_PASSWORD" `
   -v "${PWD}/db:/scripts:ro" mcr.microsoft.com/mssql/server:2022-latest /scripts/init.sh
 
 # 5. Construir la imagen de api-innovacion y encenderla
 docker build -t api-innovacion ./api_innovacion
 docker run -d --name innovacion-api --network proyecto_innovacion_curricular1_default --restart unless-stopped `
-  -e "ConnectionStrings__SqlServer=Server=sqlserver,1433;Database=innovacion_local;User Id=sa;Password=Aplicacionweb123!;TrustServerCertificate=True;" `
+  -e "ConnectionStrings__SqlServer=Server=sqlserver,1433;Database=innovacion_local;User Id=sa;Password=$env:MSSQL_SA_PASSWORD;TrustServerCertificate=True;" `
   -v "${PWD}/api_innovacion:/app" `
   -v /app/bin `
   -v /app/obj `

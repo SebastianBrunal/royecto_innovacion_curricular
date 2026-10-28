@@ -167,8 +167,17 @@ ni en archivos versionados. Van en **variables de entorno**, con el `.env`
 fuera de git y un `.env.example` adentro. En la rúbrica, un secreto
 quemado **anula el criterio de seguridad de la versión**.
 
-**Y este proyecto es la excepción, declarada.** Aquí la contraseña de SQL
-Server está escrita en **dos archivos versionados**, a propósito:
+**En este repositorio —el del equipo— la regla se cumple completa** (enmienda
+de la entrega 1, registrada como D-v1-10 en `4_research.md`): la clave de SQL
+Server vive en el `.env`, que está en el `.gitignore`; el repositorio trae
+un `.env.example` con un valor de mentira; el `docker-compose.yml` la lee con
+`${MSSQL_SA_PASSWORD}` y el `appsettings.json` ya no trae cadena de conexión.
+
+Lo que sigue es cómo estaba en el **ejemplo del profesor**, del que partió
+este repositorio, y por qué allí sí se permitía:
+
+**El ejemplo era la excepción, declarada.** Allí la contraseña de SQL
+Server estaba escrita en **dos archivos versionados**, a propósito:
 
 - el `docker-compose.yml`, que se la entrega a los contenedores;
 - el `appsettings.json`, en la cadena de desarrollo — la que permite
@@ -257,7 +266,7 @@ o se corrige el plan, o se enmienda esto.
 
 ---
 
-*Versión 1.0.0 · Ratificada el 2026-08-29 · Última enmienda: ninguna*
+*Versión 1.0.1 · Ratificada el 2026-08-29 · Última enmienda: Artículo 7, en la entrega 1 del equipo (D-v1-10)*
 
 ## Artículo 12 — La identidad visual es ARTEFACTO DADO
 

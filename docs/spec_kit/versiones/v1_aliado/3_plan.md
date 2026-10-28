@@ -335,7 +335,7 @@ simple existencia:
 | Volumen de datos | `mssqldata:/var/opt/mssql` | El directorio **completo**, no solo `/data`: ahí viven también los registros y los secretos del motor |
 | Volúmenes de la API | `./api_innovacion:/app` más `/app/bin` y `/app/obj` anónimos | El código montado es lo que permite `dotnet watch`. Los dos anónimos dejan los compilados **dentro** del contenedor: sin ellos se mezclan los binarios de Linux con los de Windows y la compilación falla con errores incomprensibles |
 | Nombre de la cadena | `ConnectionStrings__SqlServer` | El doble guion bajo hace que ASP.NET la lea como `ConnectionStrings:SqlServer` y **sobreescriba** el `appsettings.json`. El nombre tiene que ser exactamente ese en los dos lados |
-| Contraseña de `sa` | `Aplicacionweb123!` | Escrita en el compose: es la excepción declarada del Artículo 7, porque esta plantilla corre en contenedores desechables. **En un proyecto real va en el `.env`** |
+| Contraseña de `sa` | La del `.env` (no versionado) | Se lee con `${MSSQL_SA_PASSWORD}`. El repositorio solo trae `.env.example` con un valor de mentira (Artículo 7, D-v1-10) |
 | Script montado | `./db:/scripts:ro` en `sqlserver-init` | De solo lectura: el inicializador lo ejecuta, no lo modifica |
 
 **Lo que NO se pone:** `version:` al comienzo del archivo. Compose v2 lo
